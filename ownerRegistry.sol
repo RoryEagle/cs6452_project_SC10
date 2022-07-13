@@ -2,6 +2,8 @@
 
 pragma solidity ^0.8.0;
 
+import "./Tree.sol";
+import "./CarbonCredit.sol";
 
 contract ownerRegistry {
 
@@ -20,7 +22,7 @@ contract ownerRegistry {
         owner = msg.sender;
     }
 
-    event addnewTree(string location);
+    event newTreeAdded(address owner, address newTree, string location);
 
     /// @notice Add a new lunch venue
     /// @dev Needs to reference external DB to check for duplicate trees
@@ -32,6 +34,10 @@ contract ownerRegistry {
         /// Confirm with external computation component that there is no tree already at this location
 
         Tree newTree = new Tree(treeType, location);
+
+        /// emit event to be picked up by verifier oracle
+        emit newTreeAdded(address(this), newTree, location);
+
         numTrees++;
         trees[numTrees] = newTree;
         return numTrees;
@@ -50,7 +56,7 @@ contract ownerRegistry {
         /// calculate running total, once reaches 1000 exactly, stop, mark all CO2 used, mark part of last tree used
         /// create new CarbonCredit SC, add to internal list
 
-        return true
+        return true;
     }
 
 
@@ -106,6 +112,7 @@ contract ownerRegistry {
         return CarbonCredit(creditAddress).sell(price);
     }
 
+
     /// @notice Mark a carbonCredit as used
     /// @dev ###
     /// @param creditAddress address of the credit the owner wants to use
@@ -115,7 +122,9 @@ contract ownerRegistry {
     }
 
 
+    function verifyTree(address treeAddress) public  {
 
+    }
 
 
 
@@ -128,5 +137,9 @@ contract ownerRegistry {
     modifier restricted() {
         require (msg.sender == owner, "Can only be executed by the owner of this registry");
         _;
+    }
+
+    modifier verifierOnly() {
+        require (msg.sender == verifier, "Only the verifier oracle can verify a Tree");
     }
 }
