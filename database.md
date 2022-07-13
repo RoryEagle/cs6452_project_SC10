@@ -1,4 +1,4 @@
-### UrbanAI Group 1 PostgreSQL Connection Parameters
+### Database Connection Parameters
 
 * Host = trees.cquz3dafrbtb.ap-southeast-2.rds.amazonaws.com
 * Port = 5432
