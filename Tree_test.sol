@@ -13,7 +13,7 @@ contract ownerRegistryTest is ownerRegistry {
         Assert.equal(addTree('tree', 'park'), 1, 'Failed');
         Assert.equal(addTree('tree2', 'park2'), 2, 'Failed');
         //console.log("tree loc output", getTreeLoc(1));
-        Assert.equal(getTreeLoc(2), 'park2', "not right");
+        Assert.equal(getTreeLoc(2), 'park2', "This is not right");
     }
 }
 
