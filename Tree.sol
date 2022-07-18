@@ -20,7 +20,8 @@ contract Tree {
         location = tree_location;
         treeType = tree_type;
 
-        console.log("tree loc output is: ", location);
+        // console.log("tree loc output is: ", location);
+        // console.log("tree owner in tree is: ", owner);
     }
 
     function getTreeLocation() public returns (string memory) {

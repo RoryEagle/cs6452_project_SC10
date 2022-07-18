@@ -3,7 +3,8 @@
 pragma solidity ^0.8.0;
 
 import "./Tree.sol";
-import "./CarbonCredit.sol";
+//import "./CarbonCredit.sol";
+import "hardhat/console.sol";
 
 contract ownerRegistry {
 
@@ -14,7 +15,7 @@ contract ownerRegistry {
 
     //Tree[] private _trees;
     mapping (uint256 => Tree) private trees;
-    CarbonCredit[] private _carbonCredits;
+    //CarbonCredit[] private _carbonCredits;
 
     uint numTrees = 0;
     uint numCarbonCredits = 0;
@@ -22,6 +23,12 @@ contract ownerRegistry {
     constructor() {
         owner = msg.sender;
     }
+
+    struct user_inventory {
+        address tree_owner;
+        //address[] tree_address;
+        address tree_address;
+    }  
 
     event newTreeAdded(address owner, address newTree, string location);
 
@@ -31,7 +38,7 @@ contract ownerRegistry {
     /// @param location Coordinates of the tree, e.g. "-33.894425276653635, 151.264161284958"
     /// @return Number of trees in the registry at the moment
 
-    function addTree(string memory treeType, string memory location) public restricted returns (uint) {
+    function addTree(string memory treeType, string memory location) public restricted returns (int) {
         /// Confirm with external computation component that there is no tree already at this location
 
         Tree newTree = new Tree(treeType, location);
@@ -43,8 +50,17 @@ contract ownerRegistry {
         numTrees++;
         trees[numTrees] = newTree;
 
+        //user_inventory memory tree_adder;
+
+        //tree_adder.tree_owner = address(this);
+        //tree_adder.tree_owner = address(newTree);
+        //tree_adder.tree_address.push(address(newTree));
+
+
+        //console.log("inventory struct is: ", tree_adder);
+
         return numTrees;
-        //return 1;
+        //return tree_adder;
     }
 
     function getTreeLoc(uint256 index) public restricted returns (string memory) {
