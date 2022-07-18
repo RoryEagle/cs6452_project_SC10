@@ -14,7 +14,7 @@ contract ownerRegistry {
 
     //Tree[] private _trees;
     mapping (uint256 => Tree) private trees;
-    CarbonCredit[] private _carbonCredits;
+    mapping (uint256 => CarbonCredit) private _carbonCredits;
 
     uint numTrees = 0;
     uint numCarbonCredits = 0;
@@ -40,8 +40,8 @@ contract ownerRegistry {
         /// emit event to be picked up by verifier oracle
         emit newTreeAdded(address(this), address(newTree), location);
 
-        numTrees++;
         trees[numTrees] = newTree;
+        numTrees++;
 
         return numTrees;
         //return 1;
@@ -59,13 +59,36 @@ contract ownerRegistry {
     // @param location Coordinates of the tree, e.g. "-33.894425276653635, 151.264161284958"
     // @return Number of trees in the registry at the moment
 
-    function generateCredit(uint[] memory treeIndexes) public restricted returns (bool) {
+    function generateCredit(uint[] memory treeIndexes) public restricted returns (uint256) {
         /// from each tree, grab amount of CO2
-        /// Check each tree is verified
-        /// calculate running total, once reaches 1000 exactly, stop, mark all CO2 used, mark part of last tree used
-        /// create new CarbonCredit SC, add to internal list
+        uint256 totalCO2 = 0;
+        uint256 idx = 0;
+        bool enough = false;
+        console.log("Made it into the function");
 
-        return true;
+        for (uint i = 0; i < treeIndexes.length; i++) {
+            console.log("Testing Tree");
+            idx = treeIndexes[i];
+            // Check that each tree has been validated
+            require(trees[idx].isVerified(), "Tree given is not verified");
+            // Add up the total CO2 used
+            totalCO2 += trees[idx].getCO2();
+
+            // Generate new Credit
+            if (totalCO2 >= 1000) {
+                enough = true;
+
+                CarbonCredit newCredit = new CarbonCredit("Test", "Test");
+                _carbonCredits[numCarbonCredits] = newCredit;
+                numCarbonCredits ++;
+
+                // markOffCarbon()
+            }
+
+        }
+        require(enough, "Not enough CO2 in the given trees");
+        
+        return numCarbonCredits;
     }
 
 
@@ -134,8 +157,10 @@ contract ownerRegistry {
     // }
 
 
-    function verifyTree(address treeAddress) public  {
+    function verifyTree(uint idx) public {
+        require(idx < numTrees, "No tree is at the index requested");
 
+        trees[idx].verifyTree();
     }
 
     /// @notice Only manager can do
@@ -148,4 +173,15 @@ contract ownerRegistry {
     //     require (msg.sender == verifier, "Only the verifier oracle can verify a Tree");
     //     _;
     // }
+
+    // function markOffCarbon(uint[] memory treeIndexes, uint remainder) private returns (bool) {
+    //     for idx in treeIndexes {
+    //         if idx != treeIndexes[-1] {
+    //             trees[idx].markOffAllC02()
+    //         }
+    //         else {
+    //             trees[idx].markOffC02(remainder)
+    //         }
+    //     }
+    // }   
 }

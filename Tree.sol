@@ -10,6 +10,7 @@ contract Tree {
     uint public plantDate;
     string public treeType;
     string public location;
+    uint256 public CO2;
     uint256 public CO2Used;
     bool public verified;
     bool public forSale;
@@ -19,7 +20,8 @@ contract Tree {
         owner = msg.sender;
         location = tree_location;
         treeType = tree_type;
-
+        // Adding in test value amount of CO2, will be calculated with time later
+        CO2 = 250;
         console.log("tree loc output is: ", location);
     }
 
@@ -28,6 +30,13 @@ contract Tree {
         return location;
     }
 
+    function isVerified() public returns (bool) {
+        return verified;
+    }
+
+    function getCO2() public returns (uint256) {
+        return CO2;
+    }
 
 
     // function buy() public restricted {
@@ -38,9 +47,10 @@ contract Tree {
     //     // pass
     // }
     
-    // function verify() public restricted {
-    //     // pass
-    // }
+    function verifyTree() public {
+        console.log("Made it into the verifyTree tree function");
+        verified = true;
+    }
 
     // function useCO2(uint256 amountUsed) public restricted {
     //     // pass
