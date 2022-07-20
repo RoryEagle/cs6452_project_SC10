@@ -2,6 +2,7 @@ package com.example.offchainapi.controller;
 
 import com.example.offchainapi.models.Tree;
 import com.example.offchainapi.service.ApplicationService;
+import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,8 +20,10 @@ public class ApiController {
     }
 
     @GetMapping("/test")
-    public ResponseEntity<String> test() {
+    public ResponseEntity<JSONObject> test() {
         System.out.println("hello");
-        return ResponseEntity.ok("Hello");
+        JSONObject object = new JSONObject();
+        object.put("temperature", "10");
+        return ResponseEntity.ok(object);
     }
 }
