@@ -11,17 +11,19 @@ contract Tree {
     string public treeType;
     string public location;
     uint256 public CO2Used;
-    bool public verified;
+    //bool public verified;
     bool public forSale;
-    bool public salePrice;
+    uint256 public salePrice;
 
     constructor(string memory tree_type, string memory tree_location) {
         owner = msg.sender;
         location = tree_location;
         treeType = tree_type;
-
+        forSale = false;
+        
+    
         // console.log("tree loc output is: ", location);
-        // console.log("tree owner in tree is: ", owner);
+        console.log("old tree owner in tree is: ", owner);
     }
 
     function getTreeLocation() public returns (string memory) {
@@ -31,13 +33,22 @@ contract Tree {
 
 
 
-    // function buy() public restricted {
-    //     // pass
-    // }
+    function buy() public restricted returns (bool) {
+        if (forSale) {
+            owner = msg.sender;
+            console.log("new owner", owner);
+            return true;
+        }
 
-    // function sell(uint256 price) public restricted {
-    //     // pass
-    // }
+        return false;
+    }
+
+    function sell(uint256 price) public restricted returns (bool) {
+        forSale = true;
+        salePrice = price;
+
+        return forSale;
+    }
     
     // function verify() public restricted {
     //     // pass
@@ -50,4 +61,10 @@ contract Tree {
     // function getAge() public restricted returns (uint256) {
     //     // pass
     // }
+
+    /// @notice Only manager can do
+    modifier restricted() {
+        require (msg.sender == owner, "Can only be executed by the owner of this registry");
+        _;
+    }
 }

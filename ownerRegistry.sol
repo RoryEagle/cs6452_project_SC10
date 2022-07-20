@@ -22,6 +22,7 @@ contract ownerRegistry {
 
     constructor() {
         owner = msg.sender;
+        console.log('owner is ', owner);
     }
 
     struct user_inventory {
@@ -38,7 +39,7 @@ contract ownerRegistry {
     /// @param location Coordinates of the tree, e.g. "-33.894425276653635, 151.264161284958"
     /// @return Number of trees in the registry at the moment
 
-    function addTree(string memory treeType, string memory location) public restricted returns (int) {
+    function addTree(string memory treeType, string memory location) public returns (uint256) {
         /// Confirm with external computation component that there is no tree already at this location
 
         Tree newTree = new Tree(treeType, location);
@@ -50,13 +51,6 @@ contract ownerRegistry {
         numTrees++;
         trees[numTrees] = newTree;
 
-        //user_inventory memory tree_adder;
-
-        //tree_adder.tree_owner = address(this);
-        //tree_adder.tree_owner = address(newTree);
-        //tree_adder.tree_address.push(address(newTree));
-
-
         //console.log("inventory struct is: ", tree_adder);
 
         return numTrees;
@@ -65,6 +59,10 @@ contract ownerRegistry {
 
     function getTreeLoc(uint256 index) public restricted returns (string memory) {
         return trees[index].getTreeLocation();
+    }
+
+    function getOwner() public returns (address) {
+        return owner;
     }
 
     // changed @param
@@ -88,25 +86,29 @@ contract ownerRegistry {
 
 
     ///////////////////////////// [ Buy, Sell and Use functions ] ////////////////////////////////////////////////////////
-    /// @notice Try and buy a tree from someone else
-    /// @dev ###
-    /// @param treeAddress address of the tree that the owner is attempting to buy
-    /// @return bool true if successful, false otherwise
+    // @notice Try and buy a tree from someone else
+    // @dev ###
+    // @param treeAddress address of the tree that the owner is attempting to buy
+    // @return bool true if successful, false otherwise
 
-    // function buyTree(address treeAddress) public restricted returns (bool) {
+    function buyTree(uint256 treeIndex) public restricted returns (bool) {
 
-    //     successful = Tree(treeAddress).buy();
+        bool successful;
 
-    //     if (successful) {
-    //         numTrees++;
-    //         trees[numTrees] = treeAddress;
-    //     }
-    // }
+        successful = trees[treeIndex].buy();
 
-    /// @notice Try and buy a token from someone else
-    /// @dev ###
-    /// @param creditAddress address of the credit that the owner is attempting to buy
-    /// @return bool true if successful, false otherwise
+        if (successful) {
+            numTrees++;
+            trees[numTrees] = trees[treeIndex];
+            return true;
+        }
+        return false;
+    }
+
+    // @notice Try and buy a token from someone else
+    // @dev ###
+    // @param creditAddress address of the credit that the owner is attempting to buy
+    // @return bool true if successful, false otherwise
     
     // function buyToken(address creditAddress) public restricted returns (bool) {
 
@@ -120,14 +122,14 @@ contract ownerRegistry {
     // }
 
 
-    /// @notice Mark a tree for sale at a given price
-    /// @dev ###
-    /// @param treeAddress address of the tree the owner wants to sell
-    /// @param price the price the owner wants to sell the tree for
+    // @notice Mark a tree for sale at a given price
+    // @dev ###
+    // @param treeAddress address of the tree the owner wants to sell
+    // @param price the price the owner wants to sell the tree for
     // @return bool true if successful, false otherwise
-    // function sellTree(address treeAddress, uint price) public restricted returns (bool) {
-    //     return Tree(treeAddress).sell(price);
-    // }
+    function sellTree(uint treeIndex, uint price) public restricted returns (bool) {
+        return trees[treeIndex].sell(price);
+    }
 
 
     /// @notice Mark a credit for sale at a given price
