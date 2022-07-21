@@ -73,7 +73,7 @@ contract ownerRegistry {
             // Check that each tree has been validated
             require(trees[idx].isVerified(), "Tree given is not verified");
             // Add up the total CO2 used
-            totalCO2 += trees[idx].getCO2();
+            totalCO2 += trees[idx].getUnusedCO2();
 
             // Generate new Credit
             if (totalCO2 >= 1000) {
