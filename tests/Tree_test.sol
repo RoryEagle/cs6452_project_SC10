@@ -9,6 +9,15 @@ import "../Tree.sol";
 import "../ownerRegistry.sol";
 
 contract ownerRegistryTest is ownerRegistry {
+        address acc0 ;
+
+    function beforeAll() public {
+        acc0 = TestsAccounts.getAccount(0);
+    }
+
+    function checkOwner() public {
+        Assert.equal(owner, acc0, "acc0 is not the owner");
+    }
     function testAddTree() public {
         Assert.equal(addTree('tree', 'park'), 1, 'Failed');
         Assert.equal(addTree('tree2', 'park2'), 2, 'Failed');
@@ -39,8 +48,7 @@ contract ownerRegistryTest is ownerRegistry {
                 
         Assert.equal(generateCredit(idxs), 1, 'Failed when generating credit');        
     }
-    
-    /// #sender: account-0
+
     function addMoreTrees() public {
         Assert.equal(addTree('tree1', 'park1'), 5, 'Failed When adding Tree');
         Assert.equal(addTree('tree2', 'park2'), 6, 'Failed');
@@ -50,12 +58,12 @@ contract ownerRegistryTest is ownerRegistry {
 
     /// #sender: account-0
     function testCombineInsufficientTrees() public {
-                
-        uint[] memory idxs = new uint[](2);
+        uint[] memory idxs;
+        idxs  = new uint[](2);
         idxs[0] = 0;
         idxs[1] = 1;  
 
-        try this.generateCredit(idxs) returns (uint v) {
+        try this.generateCredit(idxs) returns (uint) {
             Assert.ok(false, "Should not be able to generate this credit");
         } catch Error(string memory reason) {
             Assert.equal(reason, "Not enough CO2 in the given trees", "Failed with unexpected reason");

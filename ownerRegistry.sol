@@ -59,7 +59,8 @@ contract ownerRegistry {
     // @param location Coordinates of the tree, e.g. "-33.894425276653635, 151.264161284958"
     // @return Number of trees in the registry at the moment
 
-    function generateCredit(uint[] memory treeIndexes) public restricted returns (uint256) {
+    /// NOTE: Removed restricted requirement for testing, add back in before deployment
+    function generateCredit(uint[] memory treeIndexes) public returns (uint256) {
         /// from each tree, grab amount of CO2
         uint256 totalCO2 = 0;
         uint256 idx = 0;
