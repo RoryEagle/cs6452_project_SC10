@@ -32,6 +32,12 @@ contract ownerRegistry {
     }  
 
     event newTreeAdded(address owner, address newTree, string location);
+    event newCreditAdded(address owner, address newCredit);
+    event treeBought(address tree);
+    event treeSold(address tree);
+    event creditBought(address credit);
+    event creditSold(address credit);
+
 
     /// @notice Add a new lunch venue
     /// @dev Needs to reference external DB to check for duplicate trees
