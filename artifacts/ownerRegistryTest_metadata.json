@@ -1,0 +1,251 @@
+{
+	"compiler": {
+		"version": "0.8.7+commit.e28d00a7"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "owner",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "newTree",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "location",
+						"type": "string"
+					}
+				],
+				"name": "newTreeAdded",
+				"type": "event"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "treeType",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "location",
+						"type": "string"
+					}
+				],
+				"name": "addTree",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256[]",
+						"name": "treeIndexes",
+						"type": "uint256[]"
+					}
+				],
+				"name": "generateCredit",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "index",
+						"type": "uint256"
+					}
+				],
+				"name": "getTreeLoc",
+				"outputs": [
+					{
+						"internalType": "string",
+						"name": "",
+						"type": "string"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "owner",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "testAddTree",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "testCombineTree",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "testValidateTree",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "idx",
+						"type": "uint256"
+					}
+				],
+				"name": "verifyTree",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {
+				"addTree(string,string)": {
+					"details": "Needs to reference external DB to check for duplicate trees",
+					"params": {
+						"location": "Coordinates of the tree, e.g. \"-33.894425276653635, 151.264161284958\"",
+						"treeType": "Name of the venuethe type of the tree e.g. \"Pine\", \"Mangrove\", \"Oak\""
+					},
+					"returns": {
+						"_0": "Number of trees in the registry at the moment"
+					}
+				},
+				"generateCredit(uint256[])": {
+					"details": "Needs to reference external DB to check for duplicate trees"
+				},
+				"verifyTree(uint256)": {
+					"details": "###"
+				}
+			},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {
+				"addTree(string,string)": {
+					"notice": "Add a new lunch venue"
+				},
+				"generateCredit(uint256[])": {
+					"notice": "Add a new lunch venue"
+				},
+				"verifyTree(uint256)": {
+					"notice": "Mark a carbonCredit as used"
+				}
+			},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"Tree_test.sol": "ownerRegistryTest"
+		},
+		"evmVersion": "london",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"CarbonCredit.sol": {
+			"keccak256": "0x9ccc354b84526b06bf8788c59d2e37074144a2742f2cc8307adc82f1a9393fa9",
+			"urls": [
+				"bzz-raw://42e9905515603d8702b44b20cd6be703b355c614f9ef01a9756aa82b637ea843",
+				"dweb:/ipfs/QmTQrYbJtLG2XuobNZpWpHYtn7UJWsQyoxu9yAKpdmGXPn"
+			]
+		},
+		"Tree.sol": {
+			"keccak256": "0x58e25275eec75ea942ba07f417b4e9df7355112d49bd67ad5f9e14f1a52a0745",
+			"urls": [
+				"bzz-raw://c7c539906b93f7c3f7761a529cc7439e30e4292becb820664279d7f2e770c898",
+				"dweb:/ipfs/QmSztCPmm6i8SwpZaS2cJykhvMGxkxTEVZntWB63Fsar1S"
+			]
+		},
+		"Tree_test.sol": {
+			"keccak256": "0x73531a35ad51f7fbc7f447124f1dfe1c2e51071d660fd4ea2bbcd87e064159e9",
+			"urls": [
+				"bzz-raw://8995252ad479c3ab9fc7e366d9d60524c75419f58ad040be71479061ddaa8bcd",
+				"dweb:/ipfs/QmRRYeq9vJQakNXGRqDZY2mtTNdNJBvNLDhFY8BiAuW6Mq"
+			]
+		},
+		"hardhat/console.sol": {
+			"keccak256": "0x72b6a1d297cd3b033d7c2e4a7e7864934bb767db6453623f1c3082c6534547f4",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://a8cb8681076e765c214e0d51cac989325f6b98e315eaae06ee0cbd5a9f084763",
+				"dweb:/ipfs/QmNWGHi4zmjxQTYN3NMGnJd49jBT5dE4bxTdWEaDuJrC6N"
+			]
+		},
+		"ownerRegistry.sol": {
+			"keccak256": "0x53cb1162d2a2db4e1a9713d62363750d259e003c3f495a27c360a3b81f22005a",
+			"urls": [
+				"bzz-raw://956445c0c92fcf392b16346ec5374ba7b4efc789f6467820539f814a54a87e51",
+				"dweb:/ipfs/QmZPVaKDCxdJ2KConnujLii81WpXM9Mam6heVCqpSLP88x"
+			]
+		},
+		"remix_accounts.sol": {
+			"keccak256": "0x198a94b8e0342a81c31fda8ba387964155802ef81807e01e83e2320682dce327",
+			"license": "GPL-3.0",
+			"urls": [
+				"bzz-raw://db7d9939731e6fe2030d53b80f57ce2c1f8044209c1c67e634e81160227d3019",
+				"dweb:/ipfs/QmRLYhZ2Y6bfh83QSD2hCnhVFejevzh77zUTohCCC8yCtu"
+			]
+		},
+		"remix_tests.sol": {
+			"keccak256": "0xe2783cdc204cba8c72494119339f1d90f9022b15d6c718c668b7f097d8e29787",
+			"license": "GPL-3.0",
+			"urls": [
+				"bzz-raw://bb6a22e64c7f16bcaab63b1c1a1b269d5be8a6d37bdd9dec1718477ab916b18e",
+				"dweb:/ipfs/QmdkW1tT5iadBvaHMCoskhDGZKnfdg8o1D9CcoQYtdJet7"
+			]
+		}
+	},
+	"version": 1
+}
