@@ -4,6 +4,7 @@ pragma solidity ^0.8.0;
 
 import "./Tree.sol";
 import "./CarbonCredit.sol";
+import "hardhat/console.sol";
 
 contract ownerRegistry {
 
@@ -14,16 +15,32 @@ contract ownerRegistry {
 
     //Tree[] private _trees;
     mapping (uint256 => Tree) private trees;
-    CarbonCredit[] private _carbonCredits;
+    // address private treesAddr;
+    mapping (uint256 => address) private treesAddr;
+    mapping (uint256 => CarbonCredit) private _carbonCredits;
 
     uint numTrees = 0;
     uint numCarbonCredits = 0;
 
-    constructor() {
-        owner = msg.sender;
+    constructor(address newOwner) {
+        owner = newOwner;
+        console.log('owner is', owner);
+        console.log('owner addr is ', address(this));
     }
 
+    struct user_inventory {
+        address tree_owner;
+        //address[] tree_address;
+        address tree_address;
+    }  
+
     event newTreeAdded(address owner, address newTree, string location);
+    event newCreditAdded(address owner, address newCredit);
+    event treeBought(address tree);
+    event treeSold(address tree);
+    event creditBought(address credit);
+    event creditSold(address credit);
+
 
     /// @notice Add a new lunch venue
     /// @dev Needs to reference external DB to check for duplicate trees
@@ -31,24 +48,31 @@ contract ownerRegistry {
     /// @param location Coordinates of the tree, e.g. "-33.894425276653635, 151.264161284958"
     /// @return Number of trees in the registry at the moment
 
-    function addTree(string memory treeType, string memory location) public restricted returns (uint) {
+    function addTree(string memory treeType, string memory location) public restricted returns (uint256) {
         /// Confirm with external computation component that there is no tree already at this location
 
-        Tree newTree = new Tree(treeType, location);
+        Tree newTree = new Tree(treeType, location, owner);
         //Tree newTree = new Tree();
 
         /// emit event to be picked up by verifier oracle
         emit newTreeAdded(address(this), address(newTree), location);
 
-        numTrees++;
         trees[numTrees] = newTree;
+        treesAddr[numTrees] = address(newTree);
+        numTrees++;
+
+        //console.log("inventory struct is: ", tree_adder);
 
         return numTrees;
-        //return 1;
+        //return tree_adder;
     }
 
     function getTreeLoc(uint256 index) public restricted returns (string memory) {
         return trees[index].getTreeLocation();
+    }
+
+    function getOwner() public returns (address) {
+        return owner;
     }
 
     // changed @param
@@ -59,38 +83,98 @@ contract ownerRegistry {
     // @param location Coordinates of the tree, e.g. "-33.894425276653635, 151.264161284958"
     // @return Number of trees in the registry at the moment
 
-    function generateCredit(uint[] memory treeIndexes) public restricted returns (bool) {
+    /// NOTE: Removed restricted requirement for testing, add back in before deployment
+    function generateCredit(uint[] memory treeIndexes) public returns (uint256) {
         /// from each tree, grab amount of CO2
-        /// Check each tree is verified
-        /// calculate running total, once reaches 1000 exactly, stop, mark all CO2 used, mark part of last tree used
-        /// create new CarbonCredit SC, add to internal list
+        uint256 totalCO2 = 0;
+        uint256 idx = 0;
+        bool enough = false;
+        console.log("Made it into the function");
 
-        return true;
+        for (uint i = 0; i < treeIndexes.length; i++) {
+            console.log("Testing Tree");
+            idx = treeIndexes[i];
+            // Check that each tree has been validated
+            require(trees[idx].isVerified(), "Tree given is not verified");
+            // Add up the total CO2 used
+            // totalCO2 += trees[idx].getUnusedCO2();
+
+            // Generate new Credit
+            if (totalCO2 >= 1000) {
+                enough = true;
+
+                CarbonCredit newCredit = new CarbonCredit("Test", "Test");
+                _carbonCredits[numCarbonCredits] = newCredit;
+                numCarbonCredits ++;
+
+                // markOffCarbon()
+            }
+
+        }
+        require(enough, "Not enough CO2 in the given trees");
+        
+        return numCarbonCredits;
     }
 
 
 
 
     ///////////////////////////// [ Buy, Sell and Use functions ] ////////////////////////////////////////////////////////
-    /// @notice Try and buy a tree from someone else
-    /// @dev ###
-    /// @param treeAddress address of the tree that the owner is attempting to buy
-    /// @return bool true if successful, false otherwise
+    // @notice Try and buy a tree from someone else
+    // @dev ###
+    // @param treeAddress address of the tree that the owner is attempting to buy
+    // @return bool true if successful, false otherwise
 
-    // function buyTree(address treeAddress) public restricted returns (bool) {
-
-    //     successful = Tree(treeAddress).buy();
-
-    //     if (successful) {
-    //         numTrees++;
-    //         trees[numTrees] = treeAddress;
+    // function getTreeList(address) internal restricted returns (mapping(uint256 => Tree) storage) {
+    //     for (uint i = 0; i < numTrees; i++) {
+    //         console.log ('Tree Addr', address(trees[i]));
     //     }
+    //     return trees;
     // }
 
-    /// @notice Try and buy a token from someone else
-    /// @dev ###
-    /// @param creditAddress address of the credit that the owner is attempting to buy
-    /// @return bool true if successful, false otherwise
+    function getTreeList() public returns (address[] memory) {
+        address[] memory ret = new address[](numTrees);
+        for (uint i = 0; i < numTrees; i++) {
+            ret[i] = treesAddr[i];
+            console.log ('Tree Addr', treesAddr[i]);
+        }
+        return ret;
+    }
+
+    function findAndRemove(address treeAddr) external {
+        uint index = 0;
+        for (uint i = 0; i < numTrees; i++) {
+            if (treesAddr[i] == treeAddr) {
+                index = i;
+            }
+        }
+        delete treesAddr[index];
+        numTrees--;
+    }
+
+    function buyTree(uint256 treeIndex, address temp) public restricted returns (bool) {
+
+        // bool successful;
+        address oldOwner;
+        console.log ('Temp:', temp);
+        // successful = forSaleList[treeIndex].buy();
+        oldOwner = Tree(temp).buy(owner);
+        if (oldOwner != address(this)) {
+            console.log ('Oldowner:', oldOwner);
+            treesAddr[numTrees] = temp;
+            numTrees++;
+            // mapping (uint256 => Tree) storage oldTrees = getTreeList(oldOwner)
+            ownerRegistry(oldOwner).findAndRemove(temp);
+            return true;
+        }
+        return false;
+    }
+
+
+    // @notice Try and buy a token from someone else
+    // @dev ###
+    // @param creditAddress address of the credit that the owner is attempting to buy
+    // @return bool true if successful, false otherwise
     
     // function buyToken(address creditAddress) public restricted returns (bool) {
 
@@ -104,14 +188,15 @@ contract ownerRegistry {
     // }
 
 
-    /// @notice Mark a tree for sale at a given price
-    /// @dev ###
-    /// @param treeAddress address of the tree the owner wants to sell
-    /// @param price the price the owner wants to sell the tree for
+    // @notice Mark a tree for sale at a given price
+    // @dev ###
+    // @param treeAddress address of the tree the owner wants to sell
+    // @param price the price the owner wants to sell the tree for
     // @return bool true if successful, false otherwise
-    // function sellTree(address treeAddress, uint price) public restricted returns (bool) {
-    //     return Tree(treeAddress).sell(price);
-    // }
+    function sellTree(uint treeIndex, uint price) public restricted returns (bool) {
+        // return trees[treeIndex].sell(price);
+        return Tree(treesAddr[treeIndex]).sell(price);
+    }
 
 
     /// @notice Mark a credit for sale at a given price
@@ -134,12 +219,17 @@ contract ownerRegistry {
     // }
 
 
-    function verifyTree(address treeAddress) public  {
+    function verifyTree(uint idx) public {
+        require(idx < numTrees, "No tree is at the index requested");
 
+        trees[idx].verifyTree();
     }
 
     /// @notice Only manager can do
     modifier restricted() {
+        console.log('Message sender', msg.sender);
+        console.log('ownerRegister addr', address(this));
+        console.log('Owner', owner);
         require (msg.sender == owner, "Can only be executed by the owner of this registry");
         _;
     }
@@ -148,4 +238,15 @@ contract ownerRegistry {
     //     require (msg.sender == verifier, "Only the verifier oracle can verify a Tree");
     //     _;
     // }
+
+    // function markOffCarbon(uint[] memory treeIndexes, uint remainder) private returns (bool) {
+    //     for idx in treeIndexes {
+    //         if idx != treeIndexes[-1] {
+    //             trees[idx].markOffAllC02()
+    //         }
+    //         else {
+    //             trees[idx].markOffC02(remainder)
+    //         }
+    //     }
+    // }   
 }
