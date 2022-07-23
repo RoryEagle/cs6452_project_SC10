@@ -24,7 +24,7 @@ contract ownerRegistry {
     constructor(address newOwner) {
         owner = newOwner;
         creator = msg.sender;
-        console.log('owner is ', owner);
+        console.log('owner is a ', owner);
     }
 
     struct user_inventory {
