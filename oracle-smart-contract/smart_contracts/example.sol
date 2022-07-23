@@ -6,9 +6,11 @@ contract CoatIndicator {
 
     bool public needToWearCoat = false;
 
+    //events are what oracles can listen to
     event temperatureRequest(string city);
 
     function requestTemperature(string memory city) private {
+        // (1) emit an event to be picked up by the oracle
         emit temperatureRequest(city);
     }
 
@@ -16,6 +18,7 @@ contract CoatIndicator {
         requestTemperature("Melbourne");
     }
 
+    // (2) the oracle can then execute a function within the contract as the means to give back a response
     function responsePhase(int256 temperature) public {
         needToWearCoat = temperature < 20;
     }

@@ -19,7 +19,11 @@ public class ApplicationService {
         return true;
     }
 
+    public void addTree(Tree tree) {
+            treeRepo.save(tree);
+            System.out.println("tree added!");
+    }
+
     public void test() {
-        treeRepo.save(new Tree());
     }
 }
