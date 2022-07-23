@@ -9,13 +9,14 @@ import "hardhat/console.sol";
 contract ownerRegistry {
 
     address public owner;
-    address public creator;
 
     /// Hardcode oracle address for database
     /// Hardcode orcale address for Verra
 
     //Tree[] private _trees;
     mapping (uint256 => Tree) private trees;
+    // address private treesAddr;
+    mapping (uint256 => address) private treesAddr;
     mapping (uint256 => CarbonCredit) private _carbonCredits;
 
     uint numTrees = 0;
@@ -23,8 +24,8 @@ contract ownerRegistry {
 
     constructor(address newOwner) {
         owner = newOwner;
-        creator = msg.sender;
-        console.log('owner is a ', owner);
+        console.log('owner is', owner);
+        console.log('owner addr is ', address(this));
     }
 
     struct user_inventory {
@@ -50,13 +51,14 @@ contract ownerRegistry {
     function addTree(string memory treeType, string memory location) public restricted returns (uint256) {
         /// Confirm with external computation component that there is no tree already at this location
 
-        Tree newTree = new Tree(treeType, location);
+        Tree newTree = new Tree(treeType, location, owner);
         //Tree newTree = new Tree();
 
         /// emit event to be picked up by verifier oracle
         emit newTreeAdded(address(this), address(newTree), location);
 
         trees[numTrees] = newTree;
+        treesAddr[numTrees] = address(newTree);
         numTrees++;
 
         //console.log("inventory struct is: ", tree_adder);
@@ -123,25 +125,46 @@ contract ownerRegistry {
     // @param treeAddress address of the tree that the owner is attempting to buy
     // @return bool true if successful, false otherwise
 
-    function getTreeList(address) internal restricted returns (mapping(uint256 => Tree) storage) {
+    // function getTreeList(address) internal restricted returns (mapping(uint256 => Tree) storage) {
+    //     for (uint i = 0; i < numTrees; i++) {
+    //         console.log ('Tree Addr', address(trees[i]));
+    //     }
+    //     return trees;
+    // }
+
+    function getTreeList() public returns (address[] memory) {
+        address[] memory ret = new address[](numTrees);
         for (uint i = 0; i < numTrees; i++) {
-            console.log ('Tree Addr', address(trees[i]));
+            ret[i] = treesAddr[i];
+            console.log ('Tree Addr', treesAddr[i]);
         }
-        return trees;
+        return ret;
     }
 
-    function buyTree(uint256 treeIndex) public restricted returns (bool) {
+    function findAndRemove(address treeAddr) external {
+        uint index = 0;
+        for (uint i = 0; i < numTrees; i++) {
+            if (treesAddr[i] == treeAddr) {
+                index = i;
+            }
+        }
+        delete treesAddr[index];
+        numTrees--;
+    }
+
+    function buyTree(uint256 treeIndex, address temp) public restricted returns (bool) {
 
         // bool successful;
         address oldOwner;
-        
+        console.log ('Temp:', temp);
         // successful = forSaleList[treeIndex].buy();
-        oldOwner = trees[treeIndex].buy();
-        if (oldOwner != owner) {
+        oldOwner = Tree(temp).buy(owner);
+        if (oldOwner != address(this)) {
+            console.log ('Oldowner:', oldOwner);
+            treesAddr[numTrees] = temp;
             numTrees++;
-            trees[numTrees] = trees[treeIndex];
-            mapping (uint256 => Tree) storage oldTrees = getTreeList(oldOwner);
-
+            // mapping (uint256 => Tree) storage oldTrees = getTreeList(oldOwner)
+            ownerRegistry(oldOwner).findAndRemove(temp);
             return true;
         }
         return false;
@@ -171,7 +194,8 @@ contract ownerRegistry {
     // @param price the price the owner wants to sell the tree for
     // @return bool true if successful, false otherwise
     function sellTree(uint treeIndex, uint price) public restricted returns (bool) {
-        return trees[treeIndex].sell(price);
+        // return trees[treeIndex].sell(price);
+        return Tree(treesAddr[treeIndex]).sell(price);
     }
 
 
@@ -203,7 +227,7 @@ contract ownerRegistry {
 
     /// @notice Only manager can do
     modifier restricted() {
-        console.log('Addtree sender', msg.sender);
+        console.log('Message sender', msg.sender);
         console.log('ownerRegister addr', address(this));
         console.log('Owner', owner);
         require (msg.sender == owner, "Can only be executed by the owner of this registry");
