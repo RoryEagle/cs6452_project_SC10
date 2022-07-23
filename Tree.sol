@@ -12,7 +12,7 @@ contract Tree {
     string public location;
     uint256 public CO2;
     uint256 public CO2Used;
-    //bool public verified;
+    bool public verified;
     bool public forSale;
     uint256 public salePrice;
 
@@ -44,14 +44,16 @@ contract Tree {
     }
 
 
-    function buy() public restricted returns (bool) {
+    function buy() public restricted returns (address) {
         if (forSale) {
+            address oldOwner = owner;
+            console.log("old owner", owner);
             owner = msg.sender;
             console.log("new owner", owner);
-            return true;
+            return oldOwner;
         }
 
-        return false;
+        return owner;
     }
 
     function sell(uint256 price) public restricted returns (bool) {

@@ -3,12 +3,13 @@
 pragma solidity ^0.8.0;
 
 import "./Tree.sol";
-//import "./CarbonCredit.sol";
+import "./CarbonCredit.sol";
 import "hardhat/console.sol";
 
 contract ownerRegistry {
 
     address public owner;
+    address public creator;
 
     /// Hardcode oracle address for database
     /// Hardcode orcale address for Verra
@@ -20,8 +21,9 @@ contract ownerRegistry {
     uint numTrees = 0;
     uint numCarbonCredits = 0;
 
-    constructor() {
-        owner = msg.sender;
+    constructor(address newOwner) {
+        owner = newOwner;
+        creator = msg.sender;
         console.log('owner is ', owner);
     }
 
@@ -45,7 +47,7 @@ contract ownerRegistry {
     /// @param location Coordinates of the tree, e.g. "-33.894425276653635, 151.264161284958"
     /// @return Number of trees in the registry at the moment
 
-    function addTree(string memory treeType, string memory location) public returns (uint256) {
+    function addTree(string memory treeType, string memory location) public restricted returns (uint256) {
         /// Confirm with external computation component that there is no tree already at this location
 
         Tree newTree = new Tree(treeType, location);
@@ -93,7 +95,7 @@ contract ownerRegistry {
             // Check that each tree has been validated
             require(trees[idx].isVerified(), "Tree given is not verified");
             // Add up the total CO2 used
-            totalCO2 += trees[idx].getUnusedCO2();
+            // totalCO2 += trees[idx].getUnusedCO2();
 
             // Generate new Credit
             if (totalCO2 >= 1000) {
@@ -121,19 +123,30 @@ contract ownerRegistry {
     // @param treeAddress address of the tree that the owner is attempting to buy
     // @return bool true if successful, false otherwise
 
+    function getTreeList(address) internal restricted returns (mapping(uint256 => Tree) storage) {
+        for (uint i = 0; i < numTrees; i++) {
+            console.log ('Tree Addr', address(trees[i]));
+        }
+        return trees;
+    }
+
     function buyTree(uint256 treeIndex) public restricted returns (bool) {
 
-        bool successful;
-
-        successful = trees[treeIndex].buy();
-
-        if (successful) {
+        // bool successful;
+        address oldOwner;
+        
+        // successful = forSaleList[treeIndex].buy();
+        oldOwner = trees[treeIndex].buy();
+        if (oldOwner != owner) {
             numTrees++;
             trees[numTrees] = trees[treeIndex];
+            mapping (uint256 => Tree) storage oldTrees = getTreeList(oldOwner);
+
             return true;
         }
         return false;
     }
+
 
     // @notice Try and buy a token from someone else
     // @dev ###
@@ -190,6 +203,9 @@ contract ownerRegistry {
 
     /// @notice Only manager can do
     modifier restricted() {
+        console.log('Addtree sender', msg.sender);
+        console.log('ownerRegister addr', address(this));
+        console.log('Owner', owner);
         require (msg.sender == owner, "Can only be executed by the owner of this registry");
         _;
     }
