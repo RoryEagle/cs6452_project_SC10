@@ -75,9 +75,13 @@ contract Tree {
         verified = true;
     }
 
-    function useCO2(uint256 amountUsed) public restricted {
+    function useAllButSomeCO2(uint256 remainder) public restricted {
         require (CO2 >= amountUsed, "CO2 used is more than the available amount");
-        CO2 = CO2 - amountUsed;
+        CO2 = remainder;
+    }
+
+    function useAllCO2() public restricted {
+        CO2 = 0;
     }
 
     // returns age in seconds

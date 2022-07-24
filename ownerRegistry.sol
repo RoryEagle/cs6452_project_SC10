@@ -79,17 +79,18 @@ contract ownerRegistry {
 
     /// @notice Add a new lunch venue
     /// @dev Needs to reference external DB to check for duplicate trees
-    // @param treeType Name of the venuethe type of the tree e.g. "Pine", "Mangrove", "Oak"
-    // @param location Coordinates of the tree, e.g. "-33.894425276653635, 151.264161284958"
+    /// @param treeIndexes is a list of indexes in the trees inventory that will be used for the creation of this credit
     // @return Number of trees in the registry at the moment
 
     /// NOTE: Removed restricted requirement for testing, add back in before deployment
-    function generateCredit(uint[] memory treeIndexes) public returns (uint256) {
+    function generateCredit(uint[] memory treeIndexes) public restricted returns (uint256) {
         /// from each tree, grab amount of CO2
         uint256 totalCO2 = 0;
         uint256 idx = 0;
+        uint256 remainder = 0;
+
         bool enough = false;
-        console.log("Made it into the function");
+        console.log("Beginning to iterate");
 
         for (uint i = 0; i < treeIndexes.length; i++) {
             console.log("Testing Tree");
@@ -97,21 +98,35 @@ contract ownerRegistry {
             // Check that each tree has been validated
             require(trees[idx].isVerified(), "Tree given is not verified");
             // Add up the total CO2 used
-            // totalCO2 += trees[idx].getUnusedCO2();
+            totalCO2 += trees[idx].getCO2();
 
             // Generate new Credit
             if (totalCO2 >= 1000) {
+
+                remainder = totalCO2 - 1000;
                 enough = true;
 
                 CarbonCredit newCredit = new CarbonCredit("Test", "Test");
                 _carbonCredits[numCarbonCredits] = newCredit;
                 numCarbonCredits ++;
 
-                // markOffCarbon()
+                // Mark off carbon that has been used for this credit
+                for (uint j = 0; j <= i; j++) {
+                    idx2 = treeIndexes[j];
+                    if (j != i) {
+                        trees[idx2].useAllCO2();
+                    }
+                    else {
+                        trees[idx2].useAllButSomeCO2(remainder);
+                    }
+
+                }
+                break;               
             }
 
         }
         require(enough, "Not enough CO2 in the given trees");
+        
         
         return numCarbonCredits;
     }
