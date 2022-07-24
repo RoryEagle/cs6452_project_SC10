@@ -21,8 +21,8 @@ contract ownerRegistry {
     uint numTrees = 0;
     uint numCarbonCredits = 0;
 
-    constructor(address newOwner) {
-        owner = newOwner;
+    constructor() {
+        owner = msg.sender;
     }
 
     struct user_inventory {
@@ -87,30 +87,30 @@ contract ownerRegistry {
         numCarbonCredits ++;
         emit newCreditAdded(owner, address(newCredit));
         /// from each tree, grab amount of CO2
-        uint256 totalCO2 = 0;
-        uint256 idx = 0;
-        bool enough = false;
+        // uint256 totalCO2 = 0;
+        // uint256 idx = 0;
+        // bool enough = false;
 
-        for (uint i = 0; i < treeIndexes.length; i++) {
-            idx = treeIndexes[i];
-            // Check that each tree has been validated
-            require(trees[idx].isVerified(), "Tree given is not verified");
-            // Add up the total CO2 used
-            // totalCO2 += trees[idx].getUnusedCO2();
+        // for (uint i = 0; i < treeIndexes.length; i++) {
+        //     idx = treeIndexes[i];
+        //     // Check that each tree has been validated
+        //     require(trees[idx].isVerified(), "Tree given is not verified");
+        //     // Add up the total CO2 used
+        //     // totalCO2 += trees[idx].getUnusedCO2();
 
-            // Generate new Credit
-            if (totalCO2 >= 1000) {
-                enough = true;
+        //     // Generate new Credit
+        //     if (totalCO2 >= 1000) {
+        //         enough = true;
 
-                // CarbonCredit newCredit = new CarbonCredit("Test", "Test");
-                // _carbonCredits[numCarbonCredits] = newCredit;
-                // numCarbonCredits ++;
-                // emit newCreditAdded(owner, address(newCredit));
-                // markOffCarbon()
-            }
+        //         // CarbonCredit newCredit = new CarbonCredit("Test", "Test");
+        //         // _carbonCredits[numCarbonCredits] = newCredit;
+        //         // numCarbonCredits ++;
+        //         // emit newCreditAdded(owner, address(newCredit));
+        //         // markOffCarbon()
+        //     }
 
-        }
-        require(enough, "Not enough CO2 in the given trees");
+        // }
+        // require(enough, "Not enough CO2 in the given trees");
         
         return numCarbonCredits;
     }
@@ -192,8 +192,10 @@ contract ownerRegistry {
     // @return bool true if successful, false otherwise
     function sellTree(uint treeIndex, uint price) public restricted returns (bool) {
         // return trees[treeIndex].sell(price);
-        emit treeSold(treesAddr[treeIndex]);
-        return Tree(treesAddr[treeIndex]).sell(price);
+        emit treeSold(msg.sender);
+
+        // emit treeSold(treesAddr[treeIndex]);
+        // return Tree(treesAddr[treeIndex]).sell(price);
     }
 
 

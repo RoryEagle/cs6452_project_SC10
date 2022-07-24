@@ -2,8 +2,6 @@
 
 pragma solidity ^0.8.0;
 
-import "./ownerRegistry.sol";
-
 contract Tree {
     address public ownerRegistryAddr;
     address public owner;

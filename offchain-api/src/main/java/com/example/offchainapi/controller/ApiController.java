@@ -41,9 +41,11 @@ public class ApiController {
     }
 
     @PostMapping("/sellTree")
-    public ResponseEntity<String> sellTree(@RequestParam String treeAddress) {
+    public ResponseEntity<String> sellTree(@RequestBody JSONObject tree) {
         try {
-            service.sellTree(treeAddress);
+            System.out.println("received sell request");
+            service.sellTree(tree.getAsString("address"));
+            System.out.println("tree sold");
             return ResponseEntity.ok("success");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("given tree address does not exist");
@@ -53,7 +55,7 @@ public class ApiController {
     @PostMapping("/addCarbonCredit")
     public ResponseEntity<String> addCarbonCredit(@RequestBody CarbonCredit carbonCredit) {
         try {
-            System.out.println("received! " + carbonCredit.getAddress() + carbonCredit.getOwner());
+            System.out.println("received carbon credit add! " + carbonCredit.getAddress() + carbonCredit.getOwner());
             service.addCarbonCredit(carbonCredit);
             return ResponseEntity.status(HttpStatus.CREATED).build();
         } catch (Exception e) {

@@ -13,10 +13,12 @@ import javax.persistence.Table;
 @Entity
 @Table
 @AllArgsConstructor
-@RequiredArgsConstructor
-@NoArgsConstructor
 public class CarbonCredit {
     @Id
     String owner;
     String address;
+
+    public CarbonCredit() {
+
+    }
 }
