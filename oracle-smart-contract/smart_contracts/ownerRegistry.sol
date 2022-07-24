@@ -82,6 +82,10 @@ contract ownerRegistry {
 
     /// NOTE: Removed restricted requirement for testing, add back in before deployment
     function generateCredit(uint[] memory treeIndexes) public returns (uint256) {
+        CarbonCredit newCredit = new CarbonCredit("Test", "Test");
+        _carbonCredits[numCarbonCredits] = newCredit;
+        numCarbonCredits ++;
+        emit newCreditAdded(owner, address(newCredit));
         /// from each tree, grab amount of CO2
         uint256 totalCO2 = 0;
         uint256 idx = 0;
@@ -98,10 +102,10 @@ contract ownerRegistry {
             if (totalCO2 >= 1000) {
                 enough = true;
 
-                CarbonCredit newCredit = new CarbonCredit("Test", "Test");
-                _carbonCredits[numCarbonCredits] = newCredit;
-                numCarbonCredits ++;
-
+                // CarbonCredit newCredit = new CarbonCredit("Test", "Test");
+                // _carbonCredits[numCarbonCredits] = newCredit;
+                // numCarbonCredits ++;
+                // emit newCreditAdded(owner, address(newCredit));
                 // markOffCarbon()
             }
 
@@ -156,6 +160,7 @@ contract ownerRegistry {
             treesAddr[numTrees] = temp;
             numTrees++;
             // mapping (uint256 => Tree) storage oldTrees = getTreeList(oldOwner)
+            emit treeBought(temp);
             ownerRegistry(oldOwner).findAndRemove(temp);
             return true;
         }
@@ -187,6 +192,7 @@ contract ownerRegistry {
     // @return bool true if successful, false otherwise
     function sellTree(uint treeIndex, uint price) public restricted returns (bool) {
         // return trees[treeIndex].sell(price);
+        emit treeSold(treesAddr[treeIndex]);
         return Tree(treesAddr[treeIndex]).sell(price);
     }
 

@@ -1,5 +1,6 @@
 package com.example.offchainapi.controller;
 
+import com.example.offchainapi.models.CarbonCredit;
 import com.example.offchainapi.models.Tree;
 import com.example.offchainapi.service.ApplicationService;
 import net.minidev.json.JSONObject;
@@ -40,7 +41,23 @@ public class ApiController {
     }
 
     @PostMapping("/sellTree")
-    public ResponseEntity<String> sellTree(@RequestBody Tree tree) {
+    public ResponseEntity<String> sellTree(@RequestParam String treeAddress) {
+        try {
+            service.sellTree(treeAddress);
+            return ResponseEntity.ok("success");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("given tree address does not exist");
+        }
+    }
 
+    @PostMapping("/addCarbonCredit")
+    public ResponseEntity<String> addCarbonCredit(@RequestBody CarbonCredit carbonCredit) {
+        try {
+            System.out.println("received! " + carbonCredit.getAddress() + carbonCredit.getOwner());
+            service.addCarbonCredit(carbonCredit);
+            return ResponseEntity.status(HttpStatus.CREATED).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("invalid inputs");
+        }
     }
 }

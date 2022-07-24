@@ -1,8 +1,6 @@
 package com.example.offchainapi.models;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NonNull;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -10,6 +8,7 @@ import javax.persistence.*;
 @Entity
 @Table
 @AllArgsConstructor
+@RequiredArgsConstructor
 public class Tree {
     @Id
     @NonNull
@@ -18,6 +17,8 @@ public class Tree {
     String owner;
     @NonNull
     String location;
+    boolean forSale;
+    boolean bought;
 
     public Tree() {
     }

@@ -58,7 +58,7 @@ function compileSols(solNames: string[]): any {
     let compiled = compileSols(["Tree", "ownerRegistry", "CarbonCredit"]);
 
     //DEPLOY
-    
+    console.log(compiled);
     let contract_instance: Contract;
     let gasPrice: string;
     let contract = new web3.eth.Contract(compiled.contracts["ownerRegistry"]["ownerRegistry"].abi,
@@ -121,4 +121,43 @@ function compileSols(solNames: string[]): any {
         console.log(receipt);
         console.log("error listening on event temperatureRequest");
     });
+    // event newCreditAdded(address owner, address newCredit);
+
+    contract_instance!.events["newCreditAdded(address,address)"]()
+    .on("connected", function (subscriptionId: any) {
+        console.log("listening on event newTreeAdded");
+    })
+        .on("data", async function (event: any) {
+        let city = event.returnValues.city;
+        let owner = event.returnValues.owner;
+        let newTree = event.returnValues.newTree;
+        let location = event.returnValues.location;
+
+        let temperature = await axios.post(`http://localhost:8080/addCarbonCredit`, {owner: owner, address: newTree, location: location},
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+          },
+        },)
+            .then(async function (response: any) {
+                console.log("add tree");
+                console.log
+                if (response?.res?.statusCode == 201) {
+                    console.log("success");
+                }
+            })
+            .catch(function (error: any) {
+            console.log(error);
+            });
+    })
+    .on("error", function (error: any, receipt: any) {
+        console.log(error);
+        console.log(receipt);
+        console.log("error listening on event temperatureRequest");
+    });
+
+
+    // event treeBought(address tree);
+    // event treeSold(address tree);
 })();
