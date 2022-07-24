@@ -9,7 +9,7 @@ contract Tree {
     address public ownerRegistryAddr;
     address public owner;
     address public creator;
-    uint public plantDate;
+    uint256 public plantDate;
     string public treeType;
     string public location;
     uint256 public CO2;
@@ -26,6 +26,7 @@ contract Tree {
         treeType = tree_type;
         // Adding in test value amount of CO2, will be calculated with time later
         CO2 = 250;
+        plantDate = block.timestamp;
         console.log("tree loc output is: ", location);
         console.log("Tree owner: ", owner);
         console.log("Tree creator: ", creator);
@@ -74,13 +75,16 @@ contract Tree {
         verified = true;
     }
 
-    // function useCO2(uint256 amountUsed) public restricted {
-    //     // pass
-    // }
+    function useCO2(uint256 amountUsed) public restricted {
+        CO2 = CO2 - amountUsed;
+    }
 
-    // function getAge() public restricted returns (uint256) {
-    //     // pass
-    // }
+
+    // returns age in seconds
+    function getAge() public restricted returns (uint256) {
+        uint256 age = block.timestamp - plantDate;
+        return age;
+    }
 
     /// @notice Only manager can do
     modifier restricted() {
