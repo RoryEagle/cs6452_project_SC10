@@ -38,4 +38,9 @@ public class ApiController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("invalid inputs");
         }
     }
+
+    @PostMapping("/sellTree")
+    public ResponseEntity<String> sellTree(@RequestBody Tree tree) {
+
+    }
 }

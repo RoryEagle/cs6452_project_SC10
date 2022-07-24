@@ -55,7 +55,7 @@ function compileSols(solNames: string[]): any {
     return output;
 }
 //---------------------------------------------------------
-    let compiled = compileSols(["Tree", "ownerRegistry"]);
+    let compiled = compileSols(["Tree", "ownerRegistry", "CarbonCredit"]);
 
     //DEPLOY
     
