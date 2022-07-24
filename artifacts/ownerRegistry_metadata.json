@@ -1,0 +1,212 @@
+{
+	"compiler": {
+		"version": "0.8.7+commit.e28d00a7"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [],
+				"stateMutability": "nonpayable",
+				"type": "constructor"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "owner",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "newTree",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "location",
+						"type": "string"
+					}
+				],
+				"name": "newTreeAdded",
+				"type": "event"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "treeType",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "location",
+						"type": "string"
+					}
+				],
+				"name": "addTree",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256[]",
+						"name": "treeIndexes",
+						"type": "uint256[]"
+					}
+				],
+				"name": "generateCredit",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "index",
+						"type": "uint256"
+					}
+				],
+				"name": "getTreeLoc",
+				"outputs": [
+					{
+						"internalType": "string",
+						"name": "",
+						"type": "string"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "owner",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "idx",
+						"type": "uint256"
+					}
+				],
+				"name": "verifyTree",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {
+				"addTree(string,string)": {
+					"details": "Needs to reference external DB to check for duplicate trees",
+					"params": {
+						"location": "Coordinates of the tree, e.g. \"-33.894425276653635, 151.264161284958\"",
+						"treeType": "Name of the venuethe type of the tree e.g. \"Pine\", \"Mangrove\", \"Oak\""
+					},
+					"returns": {
+						"_0": "Number of trees in the registry at the moment"
+					}
+				},
+				"generateCredit(uint256[])": {
+					"details": "Needs to reference external DB to check for duplicate trees"
+				},
+				"verifyTree(uint256)": {
+					"details": "###"
+				}
+			},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {
+				"addTree(string,string)": {
+					"notice": "Add a new lunch venue"
+				},
+				"generateCredit(uint256[])": {
+					"notice": "Add a new lunch venue"
+				},
+				"verifyTree(uint256)": {
+					"notice": "Mark a carbonCredit as used"
+				}
+			},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"ownerRegistry.sol": "ownerRegistry"
+		},
+		"evmVersion": "london",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"CarbonCredit.sol": {
+			"keccak256": "0x9ccc354b84526b06bf8788c59d2e37074144a2742f2cc8307adc82f1a9393fa9",
+			"urls": [
+				"bzz-raw://42e9905515603d8702b44b20cd6be703b355c614f9ef01a9756aa82b637ea843",
+				"dweb:/ipfs/QmTQrYbJtLG2XuobNZpWpHYtn7UJWsQyoxu9yAKpdmGXPn"
+			]
+		},
+		"Tree.sol": {
+			"keccak256": "0x58e25275eec75ea942ba07f417b4e9df7355112d49bd67ad5f9e14f1a52a0745",
+			"urls": [
+				"bzz-raw://c7c539906b93f7c3f7761a529cc7439e30e4292becb820664279d7f2e770c898",
+				"dweb:/ipfs/QmSztCPmm6i8SwpZaS2cJykhvMGxkxTEVZntWB63Fsar1S"
+			]
+		},
+		"hardhat/console.sol": {
+			"keccak256": "0x72b6a1d297cd3b033d7c2e4a7e7864934bb767db6453623f1c3082c6534547f4",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://a8cb8681076e765c214e0d51cac989325f6b98e315eaae06ee0cbd5a9f084763",
+				"dweb:/ipfs/QmNWGHi4zmjxQTYN3NMGnJd49jBT5dE4bxTdWEaDuJrC6N"
+			]
+		},
+		"ownerRegistry.sol": {
+			"keccak256": "0x5d475123bcefbafc0d5d274fd2cffe31b1e63e62e01667cd6923825ddb561ed4",
+			"urls": [
+				"bzz-raw://b19e496b6c85855ce75e7c93a08337c2a945fff49eebecbbb1c02093409608b9",
+				"dweb:/ipfs/QmZWJdDYPu3AHV9zRpgUxwuVYxGMCqTV47Le4NtuVeZm17"
+			]
+		}
+	},
+	"version": 1
+}

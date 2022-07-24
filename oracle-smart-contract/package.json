@@ -1,0 +1,22 @@
+{
+  "name": "testrepo",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@types/node": "^18.0.6",
+    "hardhat": "^2.10.1",
+    "typescript": "^4.7.4"
+  },
+  "dependencies": {
+    "axios": "^0.27.2",
+    "solc": "^0.8.15",
+    "web3": "^1.7.4"
+  }
+}
