@@ -76,9 +76,9 @@ contract Tree {
     }
 
     function useCO2(uint256 amountUsed) public restricted {
+        require (CO2 >= amountUsed, "CO2 used is more than the available amount");
         CO2 = CO2 - amountUsed;
     }
-
 
     // returns age in seconds
     function getAge() public restricted returns (uint256) {
