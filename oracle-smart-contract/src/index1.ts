@@ -218,4 +218,42 @@ function compileSols(solNames: string[]): any {
         console.log(receipt);
         console.log("error listening on event temperatureRequest");
     });
+
+    // event loadForSaleList();
+    contract_instance!.events["loadForSaleList()"]()
+    .on("connected", function (subscriptionId: any) {
+        console.log("listening on event loadForSaleList");
+    })
+        .on("data", async function (event: any) {
+
+            let forSaleList = await axios.get(`http://localhost:8080/test`)
+            .then(async function (response: any) {
+                console.log("set temp");
+            return response?.data?.temperature?.replace(/[^0-9-\.]/g, "");
+            })
+            .catch(function (error: any) {
+            console.log(error);
+            });
+// assume account balance is sufficient
+        try {
+            contract_instance.methods["responsePhase(int256)"](forSaleList).send({
+                from: account.address,
+                gasPrice: gasPrice!,
+                gas: Math.ceil(1.2 * await contract_instance.methods["responsePhase(int256)"]
+                (forSaleList).estimateGas({ from: account.address })),
+            }).then(function (receipt: any) {
+            
+                return receipt;
+            }).catch((err: any) => {
+                console.error(err);
+            });
+        } catch (e) {
+        console.log(e);
+        }
+    })
+    .on("error", function (error: any, receipt: any) {
+        console.log(error);
+        console.log(receipt);
+        console.log("error listening on event temperatureRequest");
+    });
 })();
