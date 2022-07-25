@@ -56,7 +56,8 @@ contract Tree {
         return (msg.sender, owner, salePrice);
     }
 
-    function changeOwner (address payable newOwner) public{
+    function changeOwner (address payable newOwner) public {
+        console.log('msg sender', msg.sender);
         address oldOwnerRegistryAddr = ownerRegistryAddr;
         // console.log("old ownerRegistryAddr", ownerRegistryAddr);
         // console.log("old owner", owner);

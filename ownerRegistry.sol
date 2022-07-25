@@ -13,11 +13,12 @@ contract ownerRegistry {
     /// Hardcode oracle address for database
     /// Hardcode orcale address for Verra
 
-    //Tree[] private _trees;
-    mapping (uint256 => Tree) private trees;
+    // Tree[] private _trees;
+    // mapping (uint256 => Tree) private trees;
     // address private treesAddr;
     mapping (uint256 => address) private treesAddr;
-    mapping (uint256 => CarbonCredit) private _carbonCredits;
+    // mapping (uint256 => CarbonCredit) private _carbonCredits;
+    mapping (uint256 => address) private _carbonCreditsAddr;
     mapping (uint256 => address) private forSaleList;
 
     uint numTrees = 0;
@@ -66,7 +67,7 @@ contract ownerRegistry {
         /// emit event to be picked up by verifier oracle
         emit newTreeAdded(address(this), address(newTree), location);
 
-        trees[numTrees] = newTree;
+        // trees[numTrees] = newTree;
         treesAddr[numTrees] = address(newTree);
         numTrees++;
 
@@ -82,7 +83,7 @@ contract ownerRegistry {
     }
 
     function getTreeLoc(uint256 index) public restricted returns (string memory) {
-        return trees[index].getTreeLocation();
+        return Tree(treesAddr[index]).getTreeLocation();
     }
 
     function getOwner() public returns (address) {
@@ -114,16 +115,16 @@ contract ownerRegistry {
             console.log("Testing Tree");
             idx = treeIndexes[i];
             // Check that each tree has been validated
-            require(trees[idx].isVerified(), "Tree given is not verified");
+            require(Tree(treesAddr[idx]).isVerified(), "Tree given is not verified");
             // Add up the total CO2 used
             // totalCO2 += trees[idx].getUnusedCO2();
-
+            totalCO2 += Tree(treesAddr[idx]).getCO2();
             // Generate new Credit
             if (totalCO2 >= 1000) {
                 enough = true;
-
-                CarbonCredit newCredit = new CarbonCredit("Test", "Test");
-                _carbonCredits[numCarbonCredits] = newCredit;
+                console.log("Testing Tree", totalCO2);
+                CarbonCredit newCredit = new CarbonCredit(owner);
+                _carbonCreditsAddr[numCarbonCredits] = address(newCredit);
                 numCarbonCredits ++;
 
                 // markOffCarbon()
@@ -156,6 +157,15 @@ contract ownerRegistry {
         for (uint i = 0; i < numTrees; i++) {
             ret[i] = treesAddr[i];
             console.log ('Tree Addr', treesAddr[i]);
+        }
+        return ret;
+    }
+
+    function getCreditsList() public returns (address[] memory) {
+        address[] memory ret = new address[](numCarbonCredits);
+        for (uint i = 0; i < numCarbonCredits; i++) {
+            ret[i] = _carbonCreditsAddr[i];
+            console.log ('Credit Addr', _carbonCreditsAddr[i]);
         }
         return ret;
     }
@@ -205,26 +215,43 @@ contract ownerRegistry {
     }
 
 
-    // @notice Try and buy a token from someone else
+    // @notice Try and buy a Credit from someone else
     // @dev ###
     // @param creditAddress address of the credit that the owner is attempting to buy
     // @return bool true if successful, false otherwise
     
-    // function buyToken(address creditAddress) public restricted returns (bool) {
+    function buyCredit(uint256 creditIndex, address temp) public restricted payable returns (bool) {
+        // bool successful;
+        address oldOwnerRegistryAddr;
+        address payable oldOwner;
+        uint256 salePrice;
+        // address temp;
 
-    //     successful = carbonCredit(creditAddress).buy();
+        // temp = forSaleList[treeIndex];
+        (oldOwnerRegistryAddr, oldOwner, salePrice) = CarbonCredit(temp).buy();
+        if (oldOwnerRegistryAddr != address(this)) {
+            console.log('sender balance', address(this).balance);
+            console.log('oo balance', oldOwner.balance);
+            (bool success, ) = oldOwner.call{value:salePrice}("");
+            require(success, "Transfer failed.");
+            console.log('sender balance', address(this).balance);
+            console.log('oo1 balance', oldOwner.balance);
+            // oldOwner.transfer(salePrice);
+            CarbonCredit(temp).changeOwner(owner);
+            _carbonCreditsAddr[numCarbonCredits] = temp;
+            numCarbonCredits++;
+            // test = ownerRegistry(oldOwner).getOwner();
+            // ownerRegistry(oldOwner).findAndRemove(temp);
+            return true;
+        }
+        return false;
 
-    //     if (successful) {
-    //         numCarbonCredits++;
-    //         carbonCredit[numCarbonCredits] = creditAddress;
-    //     }
-
-    // }
+    }
 
 
     // @notice Mark a tree for sale at a given price
     // @dev ###
-    // @param treeAddress address of the tree the owner wants to sell
+    // @param treeIndex the index that indicates the position of the selected tree in treesAddr
     // @param price the price the owner wants to sell the tree for
     // @return bool true if successful, false otherwise
     function sellTree(uint treeIndex, uint price) public restricted returns (bool) {
@@ -236,12 +263,12 @@ contract ownerRegistry {
 
     /// @notice Mark a credit for sale at a given price
     /// @dev ###
-    /// @param creditAddress address of the credit the owner wants to sell
+    /// @param creditIndex address of the credit the owner wants to sell
     /// @param price the price the owner wants to sell the tree for
     /// @return bool true if successful, false otherwise
-    // function sellCredit(address creditAddress, uint price) public restricted returns (bool) {
-    //     return CarbonCredit(creditAddress).sell(price);
-    // }
+    function sellCredit(uint creditIndex, uint price) public restricted returns (bool) {
+        return CarbonCredit(_carbonCreditsAddr[creditIndex]).sell(price);
+    }
 
 
     /// @notice Mark a carbonCredit as used
@@ -256,8 +283,7 @@ contract ownerRegistry {
 
     function verifyTree(uint idx) public {
         require(idx < numTrees, "No tree is at the index requested");
-
-        trees[idx].verifyTree();
+        Tree(treesAddr[idx]).verifyTree();
     }
 
     /// @notice Only manager can do
