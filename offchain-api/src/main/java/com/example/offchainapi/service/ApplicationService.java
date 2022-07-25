@@ -7,7 +7,9 @@ import com.example.offchainapi.repo.TreeRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * offchain computation logic + interaction with DB does here
@@ -34,6 +36,17 @@ public class ApplicationService {
     public void sellTree(String treeAddress) {
         Tree tree = treeRepo.getReferenceById(treeAddress);
         tree.setForSale(true);
+        treeRepo.save(tree);
+    }
+
+    public void buyTree(String treeAddress) {
+        Tree tree = treeRepo.getReferenceById(treeAddress);
+        tree.setForSale(false);
+        treeRepo.save(tree);
+    }
+
+    public List<String> getForSaleList() {
+        return treeRepo.findAll().stream().filter(Tree::isForSale).map(Tree::getAddress).collect(Collectors.toList());
     }
 
     public void addCarbonCredit(CarbonCredit carbonCredit) {

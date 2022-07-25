@@ -9,6 +9,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @RestController
 @CrossOrigin
 public class ApiController {
@@ -62,4 +65,32 @@ public class ApiController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("invalid inputs");
         }
     }
+    @PostMapping("/buyTree")
+    public ResponseEntity<String> buyTree(@RequestBody JSONObject tree) {
+        try {
+            System.out.println("received tree bought request");
+            service.buyTree(tree.getAsString("address"));
+            System.out.println("tree bought");
+            return ResponseEntity.ok("success");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("given tree address does not exist");
+        }
+    }
+
+    @GetMapping("/loadTreesForSale")
+    public ResponseEntity<List<String>> forSaleList() {
+        try {
+            System.out.println("getting for sale tree list");
+            return ResponseEntity.ok(service.getForSaleList());
+//            List<String> list=new ArrayList<String>(){{
+//                add("1");
+//                add("2");
+//                add("3");
+//            }};
+//            return ResponseEntity.ok(list);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
 }
