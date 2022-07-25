@@ -7,8 +7,8 @@ import "hardhat/console.sol";
 
 contract Tree {
     address public ownerRegistryAddr;
-    address public owner;
-    address public creator;
+    address payable public owner;
+    address payable public creator;
     uint256 public plantDate;
     string public treeType;
     string public location;
@@ -18,7 +18,7 @@ contract Tree {
     bool public forSale;
     uint256 public salePrice;
 
-    constructor(string memory tree_type, string memory tree_location, address creatorAddr) {
+    constructor(string memory tree_type, string memory tree_location, address payable creatorAddr) {
         ownerRegistryAddr = msg.sender;
         owner = creatorAddr;
         creator = creatorAddr;
@@ -48,19 +48,24 @@ contract Tree {
     }
 
 
-    function buy(address newOwner) public returns (address) {
+    function buy() public returns (address, address payable, uint256) {
+        address oldOwnerRegistryAddr = ownerRegistryAddr;
         if (forSale == true && ownerRegistryAddr != msg.sender) {
-            address oldOwnerRegistryAddr = ownerRegistryAddr;
-            console.log("old ownerRegistryAddr", ownerRegistryAddr);
-            console.log("old owner", owner);
-            ownerRegistryAddr = msg.sender;
-            owner = newOwner;
-            console.log("new ownerRegistryAddr", ownerRegistryAddr);
-            console.log("new owner", owner);
-            return oldOwnerRegistryAddr;
+            return (oldOwnerRegistryAddr, owner, salePrice);
         }
+        return (msg.sender, owner, salePrice);
+    }
 
-        return msg.sender;
+    function changeOwner (address payable newOwner) public {
+        console.log('msg sender', msg.sender);
+        address oldOwnerRegistryAddr = ownerRegistryAddr;
+        // console.log("old ownerRegistryAddr", ownerRegistryAddr);
+        // console.log("old owner", owner);
+        ownerRegistryAddr = msg.sender;
+        owner = newOwner;
+        forSale = false;
+        // console.log("new ownerRegistryAddr", ownerRegistryAddr);
+        // console.log("new owner", owner);
     }
 
     function sell(uint256 price) public restricted returns (bool) {

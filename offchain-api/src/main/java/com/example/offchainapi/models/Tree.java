@@ -18,7 +18,6 @@ public class Tree {
     @NonNull
     String location;
     boolean forSale;
-    boolean bought;
 
     public Tree() {
     }
