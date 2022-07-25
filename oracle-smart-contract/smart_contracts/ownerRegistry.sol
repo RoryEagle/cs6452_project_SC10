@@ -33,13 +33,14 @@ contract ownerRegistry {
         address tree_address;
     }  
 
-    event newTreeAdded(address owner, address newTree, string location);
+    event newTreeAdded(address owner, address newTree, string location, uint idx);
     event newCreditAdded(address owner, address newCredit);
     event treeBought(address tree);
     event treeSold(address tree);
     event creditBought(address credit);
     event creditSold(address credit);
     event loadForSaleList();
+    event log(bool isVerified);
 
 
     /// @notice Add a new lunch venue
@@ -55,7 +56,7 @@ contract ownerRegistry {
         //Tree newTree = new Tree();
 
         /// emit event to be picked up by verifier oracle
-        emit newTreeAdded(address(this), address(newTree), location);
+        emit newTreeAdded(address(this), address(newTree), location, numTrees);
 
         trees[numTrees] = newTree;
         treesAddr[numTrees] = address(newTree);
@@ -228,6 +229,10 @@ contract ownerRegistry {
         require(idx < numTrees, "No tree is at the index requested");
 
         trees[idx].verifyTree();
+    }
+
+    function isTreeVerified(uint idx) public {
+        emit log(trees[idx].isVerified());
     }
 
     /// @notice Only manager can do
