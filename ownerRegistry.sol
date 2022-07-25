@@ -18,8 +18,10 @@ contract ownerRegistry {
     // address private treesAddr;
     mapping (uint256 => address) private treesAddr;
     mapping (uint256 => CarbonCredit) private _carbonCredits;
+    mapping (uint256 => address) private forSaleList;
 
     uint numTrees = 0;
+    uint numTreesForSale = 0;
     uint numCarbonCredits = 0;
 
     constructor(address newOwner) {
@@ -40,6 +42,7 @@ contract ownerRegistry {
     event treeSold(address tree);
     event creditBought(address credit);
     event creditSold(address credit);
+    event loadForSaleList();
 
 
     /// @notice Add a new lunch venue
@@ -65,6 +68,11 @@ contract ownerRegistry {
 
         return numTrees;
         //return tree_adder;
+    }
+
+    function addTreeForSale(address tree) {
+        forSaleList[numTreesForSale] = tree;
+        numTreesForSale++;
     }
 
     function getTreeLoc(uint256 index) public restricted returns (string memory) {
@@ -150,6 +158,10 @@ contract ownerRegistry {
         }
         delete treesAddr[index];
         numTrees--;
+    }
+
+    function loadTreesForSale() {
+        emit loadForSaleList();
     }
 
     function buyTree(uint256 treeIndex, address temp) public restricted returns (bool) {
