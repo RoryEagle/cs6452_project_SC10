@@ -1,4 +1,4 @@
-// SPDX-License-Identifier:UNLICENSED
+// SPDX - License - Identifier : UNLICENSED
 
 pragma solidity ^0.8.0;
 
@@ -20,10 +20,11 @@ contract ownerRegistry {
     mapping (uint256 => address) private forSaleList;
 
     uint numTrees = 0;
+    uint numTreesForSale = 0;
     uint numCarbonCredits = 0;
 
-    constructor() {
-        owner = msg.sender;
+    constructor(address newOwner) {
+        owner = newOwner;
     }
 
     struct user_inventory {
@@ -36,9 +37,9 @@ contract ownerRegistry {
     event newCreditAdded(address owner, address newCredit);
     event treeBought(address tree);
     event treeSold(address tree);
-    event loadForSaleList();
     event creditBought(address credit);
     event creditSold(address credit);
+    event loadForSaleList();
 
 
     /// @notice Add a new lunch venue
@@ -66,16 +67,17 @@ contract ownerRegistry {
         //return tree_adder;
     }
 
+    function addTreeForSale(address tree) public {
+        forSaleList[numTreesForSale] = tree;
+        numTreesForSale++;
+    }
+
     function getTreeLoc(uint256 index) public restricted returns (string memory) {
         return trees[index].getTreeLocation();
     }
 
     function getOwner() public returns (address) {
         return owner;
-    }
-
-    function addTreeForSale(address tree) {
-
     }
 
     // changed @param
@@ -88,35 +90,31 @@ contract ownerRegistry {
 
     /// NOTE: Removed restricted requirement for testing, add back in before deployment
     function generateCredit(uint[] memory treeIndexes) public returns (uint256) {
-        CarbonCredit newCredit = new CarbonCredit("Test", "Test");
-        _carbonCredits[numCarbonCredits] = newCredit;
-        numCarbonCredits ++;
-        emit newCreditAdded(owner, address(newCredit));
         /// from each tree, grab amount of CO2
-        // uint256 totalCO2 = 0;
-        // uint256 idx = 0;
-        // bool enough = false;
+        uint256 totalCO2 = 0;
+        uint256 idx = 0;
+        bool enough = false;
 
-        // for (uint i = 0; i < treeIndexes.length; i++) {
-        //     idx = treeIndexes[i];
-        //     // Check that each tree has been validated
-        //     require(trees[idx].isVerified(), "Tree given is not verified");
-        //     // Add up the total CO2 used
-        //     // totalCO2 += trees[idx].getUnusedCO2();
+        for (uint i = 0; i < treeIndexes.length; i++) {
+            idx = treeIndexes[i];
+            // Check that each tree has been validated
+            require(trees[idx].isVerified(), "Tree given is not verified");
+            // Add up the total CO2 used
+            // totalCO2 += trees[idx].getUnusedCO2();
 
-        //     // Generate new Credit
-        //     if (totalCO2 >= 1000) {
-        //         enough = true;
+            // Generate new Credit
+            if (totalCO2 >= 1000) {
+                enough = true;
 
-        //         // CarbonCredit newCredit = new CarbonCredit("Test", "Test");
-        //         // _carbonCredits[numCarbonCredits] = newCredit;
-        //         // numCarbonCredits ++;
-        //         // emit newCreditAdded(owner, address(newCredit));
-        //         // markOffCarbon()
-        //     }
+                CarbonCredit newCredit = new CarbonCredit("Test", "Test");
+                _carbonCredits[numCarbonCredits] = newCredit;
+                numCarbonCredits ++;
 
-        // }
-        // require(enough, "Not enough CO2 in the given trees");
+                // markOffCarbon()
+            }
+
+        }
+        require(enough, "Not enough CO2 in the given trees");
         
         return numCarbonCredits;
     }
@@ -156,6 +154,10 @@ contract ownerRegistry {
         numTrees--;
     }
 
+    function loadTreesForSale() public {
+        emit loadForSaleList();
+    }
+
     function buyTree(uint256 treeIndex, address temp) public restricted returns (bool) {
 
         // bool successful;
@@ -166,7 +168,6 @@ contract ownerRegistry {
             treesAddr[numTrees] = temp;
             numTrees++;
             // mapping (uint256 => Tree) storage oldTrees = getTreeList(oldOwner)
-            emit treeBought(temp);
             ownerRegistry(oldOwner).findAndRemove(temp);
             return true;
         }
@@ -198,10 +199,7 @@ contract ownerRegistry {
     // @return bool true if successful, false otherwise
     function sellTree(uint treeIndex, uint price) public restricted returns (bool) {
         // return trees[treeIndex].sell(price);
-        emit treeSold(msg.sender);
-
-        // emit treeSold(treesAddr[treeIndex]);
-        // return Tree(treesAddr[treeIndex]).sell(price);
+        return Tree(treesAddr[treeIndex]).sell(price);
     }
 
 
