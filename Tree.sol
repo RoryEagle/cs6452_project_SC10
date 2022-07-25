@@ -18,7 +18,7 @@ contract Tree {
     bool public forSale;
     uint256 public salePrice;
 
-    constructor(string memory tree_type, string memory tree_location, address payable creatorAddr) {
+    constructor(string memory tree_type, string memory tree_location, address payable creatorAddr) payable {
         ownerRegistryAddr = msg.sender;
         owner = creatorAddr;
         creator = creatorAddr;

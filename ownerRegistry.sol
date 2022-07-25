@@ -207,8 +207,7 @@ contract ownerRegistry {
             treesAddr[numTrees] = temp;
             numTrees++;
             // mapping (uint256 => Tree) storage oldTrees = getTreeList(oldOwner)
-            // test = ownerRegistry(oldOwner).getOwner();
-            // ownerRegistry(oldOwner).findAndRemove(temp);
+            ownerRegistry(payable(oldOwnerRegistryAddr)).findAndRemove(temp);
             return true;
         }
         return false;
@@ -240,8 +239,7 @@ contract ownerRegistry {
             CarbonCredit(temp).changeOwner(owner);
             _carbonCreditsAddr[numCarbonCredits] = temp;
             numCarbonCredits++;
-            // test = ownerRegistry(oldOwner).getOwner();
-            // ownerRegistry(oldOwner).findAndRemove(temp);
+            ownerRegistry(payable(oldOwnerRegistryAddr)).findAndRemove(temp);
             return true;
         }
         return false;
@@ -276,9 +274,9 @@ contract ownerRegistry {
     // @param creditAddress address of the credit the owner wants to use
     // @return bool true if successful, false otherwise
     
-    // function useCredit(address creditAddress) public restricted returns (bool) {
-    //     return Tree(treeAddress).use();
-    // }
+    function useCredit(uint creditIndex) public restricted returns (bool) {
+        return CarbonCredit(_carbonCreditsAddr[creditIndex]).use();
+    }
 
 
     function verifyTree(uint idx) public {

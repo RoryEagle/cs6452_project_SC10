@@ -13,11 +13,12 @@ contract CarbonCredit {
     uint public salePrice;
     bool public expired;
 
-    constructor(address payable creatorAddr) {
+    constructor(address payable creatorAddr) payable {
         ownerRegistryAddr = msg.sender;
         owner = creatorAddr;
         creator = creatorAddr;
         forSale = false;
+        expired = false;
     }
 
     function buy() public returns (address, address payable, uint256) {
@@ -42,9 +43,14 @@ contract CarbonCredit {
         return forSale;
     }
 
-    // function use() public {
-
-    // }
+    function use() public restricted returns (bool) {
+        if (expired) {
+            return false;
+        }
+        console.log('Im here', payable(address(this)));
+        selfdestruct(payable(address(this)));
+        return true;
+    }
 
     modifier restricted() {
         require (msg.sender == ownerRegistryAddr, "Can only be executed by the owner of this carbonCredit");
