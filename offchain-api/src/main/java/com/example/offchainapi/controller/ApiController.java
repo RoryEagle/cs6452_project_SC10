@@ -62,4 +62,16 @@ public class ApiController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("invalid inputs");
         }
     }
+    @PostMapping("/buyTree")
+    public ResponseEntity<String> buyTree(@RequestBody JSONObject tree) {
+        try {
+            System.out.println("received tree bought request");
+            service.buyTree(tree.getAsString("address"));
+            System.out.println("tree bought");
+            return ResponseEntity.ok("success");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("given tree address does not exist");
+        }
+    }
+
 }

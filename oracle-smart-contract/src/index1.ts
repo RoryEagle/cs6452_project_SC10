@@ -157,6 +157,36 @@ function compileSols(solNames: string[]): any {
 
 
     // event treeBought(address tree);
+    contract_instance!.events["treeBought(address)"]()
+    .on("connected", function (subscriptionId: any) {
+        console.log("listening on event treeBought");
+    })
+        .on("data", async function (event: any) {
+        let address = event.returnValues.tree;
+
+        let temperature = await axios.post(`http://localhost:8080/buyTree`, {address: address},
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+          },
+        },)
+            .then(async function (response: any) {
+                console.log("bought tree");
+                console.log
+                if (response?.res?.statusCode == 200) {
+                    console.log("success");
+                }
+            })
+            .catch(function (error: any) {
+            console.log(error);
+            });
+    })
+    .on("error", function (error: any, receipt: any) {
+        console.log(error);
+        console.log(receipt);
+        console.log("error listening on event temperatureRequest");
+    });
     // event treeSold(address tree);
     contract_instance!.events["treeSold(address)"]()
     .on("connected", function (subscriptionId: any) {

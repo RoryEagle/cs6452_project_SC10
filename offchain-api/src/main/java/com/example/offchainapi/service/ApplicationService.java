@@ -34,6 +34,13 @@ public class ApplicationService {
     public void sellTree(String treeAddress) {
         Tree tree = treeRepo.getReferenceById(treeAddress);
         tree.setForSale(true);
+        treeRepo.save(tree);
+    }
+
+    public void buyTree(String treeAddress) {
+        Tree tree = treeRepo.getReferenceById(treeAddress);
+        tree.setForSale(false);
+        treeRepo.save(tree);
     }
 
     public void addCarbonCredit(CarbonCredit carbonCredit) {
