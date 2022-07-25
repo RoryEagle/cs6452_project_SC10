@@ -17,6 +17,7 @@ contract ownerRegistry {
     // address private treesAddr;
     mapping (uint256 => address) private treesAddr;
     mapping (uint256 => CarbonCredit) private _carbonCredits;
+    mapping (uint256 => address) private forSaleList;
 
     uint numTrees = 0;
     uint numCarbonCredits = 0;
@@ -35,6 +36,7 @@ contract ownerRegistry {
     event newCreditAdded(address owner, address newCredit);
     event treeBought(address tree);
     event treeSold(address tree);
+    event loadForSaleList();
     event creditBought(address credit);
     event creditSold(address credit);
 
@@ -70,6 +72,10 @@ contract ownerRegistry {
 
     function getOwner() public returns (address) {
         return owner;
+    }
+
+    function addTreeForSale(address tree) {
+
     }
 
     // changed @param
