@@ -8,7 +8,7 @@ import "hardhat/console.sol";
 
 contract ownerRegistry {
 
-    address public owner;
+    address payable public owner;
 
     /// Hardcode oracle address for database
     /// Hardcode orcale address for Verra
@@ -24,7 +24,7 @@ contract ownerRegistry {
     uint numTreesForSale = 0;
     uint numCarbonCredits = 0;
 
-    constructor(address newOwner) {
+    constructor(address payable newOwner) payable{
         owner = newOwner;
         console.log('owner is', owner);
         console.log('owner addr is ', address(this));
@@ -45,12 +45,18 @@ contract ownerRegistry {
     event loadForSaleList();
 
 
+    // Function to receive Ether. msg.data must be empty
+    receive() external payable {}
+
+    // Fallback function is called when msg.data is not empty
+    fallback() external payable {}
+
     /// @notice Add a new lunch venue
     /// @dev Needs to reference external DB to check for duplicate trees
     /// @param treeType Name of the venuethe type of the tree e.g. "Pine", "Mangrove", "Oak"
     /// @param location Coordinates of the tree, e.g. "-33.894425276653635, 151.264161284958"
     /// @return Number of trees in the registry at the moment
-
+    
     function addTree(string memory treeType, string memory location) public restricted returns (uint256) {
         /// Confirm with external computation component that there is no tree already at this location
 
@@ -81,6 +87,11 @@ contract ownerRegistry {
 
     function getOwner() public returns (address) {
         return owner;
+    }
+
+    function getBalance() public view returns (uint256) {
+        console.log('this balance', address(this).balance);
+        return owner.balance;
     }
 
     // changed @param
@@ -164,19 +175,30 @@ contract ownerRegistry {
         emit loadForSaleList();
     }
 
-    function buyTree(uint256 treeIndex, address temp) public restricted returns (bool) {
+    function buyTree(uint256 treeIndex, address temp) public restricted payable returns (bool) {
 
         // bool successful;
-        address oldOwner;
-        console.log ('Temp:', temp);
-        // successful = forSaleList[treeIndex].buy();
-        oldOwner = Tree(temp).buy(owner);
-        if (oldOwner != address(this)) {
-            console.log ('Oldowner:', oldOwner);
+        address oldOwnerRegistryAddr;
+        address payable oldOwner;
+        uint256 salePrice;
+        // address temp;
+
+        // temp = forSaleList[treeIndex];
+        (oldOwnerRegistryAddr, oldOwner, salePrice) = Tree(temp).buy();
+        if (oldOwnerRegistryAddr != address(this)) {
+            console.log('sender balance', address(this).balance);
+            console.log('oo balance', oldOwner.balance);
+            (bool success, ) = oldOwner.call{value:salePrice}("");
+            require(success, "Transfer failed.");
+            console.log('sender balance', address(this).balance);
+            console.log('oo1 balance', oldOwner.balance);
+            // oldOwner.transfer(salePrice);
+            Tree(temp).changeOwner(owner);
             treesAddr[numTrees] = temp;
             numTrees++;
             // mapping (uint256 => Tree) storage oldTrees = getTreeList(oldOwner)
-            ownerRegistry(oldOwner).findAndRemove(temp);
+            // test = ownerRegistry(oldOwner).getOwner();
+            // ownerRegistry(oldOwner).findAndRemove(temp);
             return true;
         }
         return false;
