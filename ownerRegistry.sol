@@ -70,7 +70,7 @@ contract ownerRegistry {
         //return tree_adder;
     }
 
-    function addTreeForSale(address tree) {
+    function addTreeForSale(address tree) public {
         forSaleList[numTreesForSale] = tree;
         numTreesForSale++;
     }
@@ -160,7 +160,7 @@ contract ownerRegistry {
         numTrees--;
     }
 
-    function loadTreesForSale() {
+    function loadTreesForSale() public {
         emit loadForSaleList();
     }
 
