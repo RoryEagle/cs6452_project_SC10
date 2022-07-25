@@ -207,6 +207,7 @@ contract ownerRegistry {
     // @return bool true if successful, false otherwise
     function sellTree(uint treeIndex, uint price) public restricted returns (bool) {
         // return trees[treeIndex].sell(price);
+        emit treeSold(treesAddr[treeIndex]);
         return Tree(treesAddr[treeIndex]).sell(price);
     }
 
