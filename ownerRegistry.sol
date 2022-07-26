@@ -25,8 +25,8 @@ contract ownerRegistry {
     uint numTreesForSale = 0;
     uint numCarbonCredits = 0;
 
-    constructor(address payable newOwner) payable{
-        owner = newOwner;
+    constructor() payable{
+        owner = payable(msg.sender);
         console.log('owner is', owner);
         console.log('owner addr is ', address(this));
     }
@@ -104,12 +104,15 @@ contract ownerRegistry {
     // @return Number of trees in the registry at the moment
 
     /// NOTE: Removed restricted requirement for testing, add back in before deployment
-    function generateCredit(uint[] memory treeIndexes) public returns (uint256) {
+    function generateCredit(uint[] memory treeIndexes) public restricted returns (uint256) {
         /// from each tree, grab amount of CO2
         uint256 totalCO2 = 0;
         uint256 idx = 0;
+        uint256 remainder = 0;
+        uint256 idx2 = 0;
+
         bool enough = false;
-        console.log("Made it into the function");
+        console.log("Beginning to iterate");
 
         for (uint i = 0; i < treeIndexes.length; i++) {
             console.log("Testing Tree");
@@ -117,22 +120,35 @@ contract ownerRegistry {
             // Check that each tree has been validated
             require(Tree(treesAddr[idx]).isVerified(), "Tree given is not verified");
             // Add up the total CO2 used
-            // totalCO2 += trees[idx].getUnusedCO2();
             totalCO2 += Tree(treesAddr[idx]).getCO2();
             // Generate new Credit
             if (totalCO2 >= 1000) {
+
+                remainder = totalCO2 - 1000;
                 enough = true;
                 console.log("Testing Tree", totalCO2);
                 CarbonCredit newCredit = new CarbonCredit(owner);
                 _carbonCreditsAddr[numCarbonCredits] = address(newCredit);
                 numCarbonCredits ++;
 
-                // markOffCarbon()
+                // Mark off carbon that has been used for this credit
+                for (uint j = 0; j <= i; j++) {
+                    idx2 = treeIndexes[j];
+                    if (j != i) {
+                        Tree(treesAddr[idx2]).useAllCO2();
+                    }
+                    else {
+                        Tree(treesAddr[idx2]).useAllButSomeCO2(remainder);
+                    }
+
+                }
+                break;
             }
 
         }
         require(enough, "Not enough CO2 in the given trees");
-        
+
+
         return numCarbonCredits;
     }
 
@@ -170,7 +186,7 @@ contract ownerRegistry {
         return ret;
     }
 
-    function findAndRemove(address treeAddr) external {
+    function findAndRemoveTree(address treeAddr) external {
         uint index = 0;
         for (uint i = 0; i < numTrees; i++) {
             if (treesAddr[i] == treeAddr) {
@@ -179,6 +195,17 @@ contract ownerRegistry {
         }
         delete treesAddr[index];
         numTrees--;
+    }
+
+    function findAndRemoveCC(address ccAddr) external {
+        uint index = 0;
+        for (uint i = 0; i < numCarbonCredits; i++) {
+            if (_carbonCreditsAddr[i] == ccAddr) {
+                index = i;
+            }
+        }
+        delete _carbonCreditsAddr[index];
+        numCarbonCredits--;
     }
 
     function loadTreesForSale() public {
@@ -207,7 +234,7 @@ contract ownerRegistry {
             treesAddr[numTrees] = temp;
             numTrees++;
             // mapping (uint256 => Tree) storage oldTrees = getTreeList(oldOwner)
-            ownerRegistry(payable(oldOwnerRegistryAddr)).findAndRemove(temp);
+            ownerRegistry(payable(oldOwnerRegistryAddr)).findAndRemoveTree(temp);
             return true;
         }
         return false;
@@ -226,7 +253,7 @@ contract ownerRegistry {
         uint256 salePrice;
         // address temp;
 
-        // temp = forSaleList[treeIndex];
+        // temp = forSaleListCC[creditIndex];
         (oldOwnerRegistryAddr, oldOwner, salePrice) = CarbonCredit(temp).buy();
         if (oldOwnerRegistryAddr != address(this)) {
             console.log('sender balance', address(this).balance);
@@ -239,7 +266,7 @@ contract ownerRegistry {
             CarbonCredit(temp).changeOwner(owner);
             _carbonCreditsAddr[numCarbonCredits] = temp;
             numCarbonCredits++;
-            ownerRegistry(payable(oldOwnerRegistryAddr)).findAndRemove(temp);
+            ownerRegistry(payable(oldOwnerRegistryAddr)).findAndRemoveCC(temp);
             return true;
         }
         return false;
@@ -292,20 +319,4 @@ contract ownerRegistry {
         require (msg.sender == owner, "Can only be executed by the owner of this registry");
         _;
     }
-
-    // modifier verifierOnly() {
-    //     require (msg.sender == verifier, "Only the verifier oracle can verify a Tree");
-    //     _;
-    // }
-
-    // function markOffCarbon(uint[] memory treeIndexes, uint remainder) private returns (bool) {
-    //     for idx in treeIndexes {
-    //         if idx != treeIndexes[-1] {
-    //             trees[idx].markOffAllC02()
-    //         }
-    //         else {
-    //             trees[idx].markOffC02(remainder)
-    //         }
-    //     }
-    // }   
 }

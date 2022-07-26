@@ -2,7 +2,6 @@
 
 pragma solidity ^0.8.0;
 
-import "./ownerRegistry.sol";
 import "hardhat/console.sol";
 
 contract Tree {
@@ -91,6 +90,15 @@ contract Tree {
         return age;
     }
 
+    function useAllButSomeCO2(uint256 remainder) public restricted {
+        require (CO2 >= remainder, "CO2 used is more than the available amount");
+        CO2 = remainder;
+    }
+
+    function useAllCO2() public restricted {
+        CO2 = 0;
+    }
+    
     /// @notice Only manager can do
     modifier restricted() {
         require (msg.sender == ownerRegistryAddr, "Can only be executed by the owner of this tree");

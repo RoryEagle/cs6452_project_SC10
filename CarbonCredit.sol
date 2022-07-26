@@ -48,7 +48,7 @@ contract CarbonCredit {
             return false;
         }
         console.log('Im here', payable(address(this)));
-        selfdestruct(payable(address(this)));
+        expired = true;
         return true;
     }
 
