@@ -20,6 +20,7 @@ contract ownerRegistry {
     // mapping (uint256 => CarbonCredit) private _carbonCredits;
     mapping (uint256 => address) private _carbonCreditsAddr;
     mapping (uint256 => address) private forSaleList;
+    mapping (uint256 => address) private forSaleListCC;
 
     uint numTrees = 0;
     uint numTreesForSale = 0;
@@ -212,15 +213,15 @@ contract ownerRegistry {
         emit loadForSaleList();
     }
 
-    function buyTree(uint256 treeIndex, address temp) public restricted payable returns (bool) {
+    function buyTree(uint256 treeIndex) public restricted payable returns (bool) {
 
         // bool successful;
         address oldOwnerRegistryAddr;
         address payable oldOwner;
         uint256 salePrice;
-        // address temp;
+        address temp;
 
-        // temp = forSaleList[treeIndex];
+        temp = forSaleList[treeIndex];
         (oldOwnerRegistryAddr, oldOwner, salePrice) = Tree(temp).buy();
         if (oldOwnerRegistryAddr != address(this)) {
             console.log('sender balance', address(this).balance);
@@ -246,14 +247,14 @@ contract ownerRegistry {
     // @param creditAddress address of the credit that the owner is attempting to buy
     // @return bool true if successful, false otherwise
     
-    function buyCredit(uint256 creditIndex, address temp) public restricted payable returns (bool) {
+    function buyCredit(uint256 creditIndex) public restricted payable returns (bool) {
         // bool successful;
         address oldOwnerRegistryAddr;
         address payable oldOwner;
         uint256 salePrice;
-        // address temp;
+        address temp;
 
-        // temp = forSaleListCC[creditIndex];
+        temp = forSaleListCC[creditIndex];
         (oldOwnerRegistryAddr, oldOwner, salePrice) = CarbonCredit(temp).buy();
         if (oldOwnerRegistryAddr != address(this)) {
             console.log('sender balance', address(this).balance);
