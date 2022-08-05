@@ -2,13 +2,12 @@
 
 pragma solidity ^0.8.0;
 
-import "./ownerRegistry.sol";
 import "hardhat/console.sol";
 
 contract Tree {
     address public ownerRegistryAddr;
-    address public owner;
-    address public creator;
+    address payable public owner;
+    address payable public creator;
     uint256 public plantDate;
     string public treeType;
     string public location;
@@ -18,7 +17,7 @@ contract Tree {
     bool public forSale;
     uint256 public salePrice;
 
-    constructor(string memory tree_type, string memory tree_location, address creatorAddr) {
+    constructor(string memory tree_type, string memory tree_location, address payable creatorAddr) payable {
         ownerRegistryAddr = msg.sender;
         owner = creatorAddr;
         creator = creatorAddr;
@@ -48,19 +47,24 @@ contract Tree {
     }
 
 
-    function buy(address newOwner) public returns (address) {
+    function buy() public returns (address, address payable, uint256) {
+        address oldOwnerRegistryAddr = ownerRegistryAddr;
         if (forSale == true && ownerRegistryAddr != msg.sender) {
-            address oldOwnerRegistryAddr = ownerRegistryAddr;
-            console.log("old ownerRegistryAddr", ownerRegistryAddr);
-            console.log("old owner", owner);
-            ownerRegistryAddr = msg.sender;
-            owner = newOwner;
-            console.log("new ownerRegistryAddr", ownerRegistryAddr);
-            console.log("new owner", owner);
-            return oldOwnerRegistryAddr;
+            return (oldOwnerRegistryAddr, owner, salePrice);
         }
+        return (msg.sender, owner, salePrice);
+    }
 
-        return msg.sender;
+    function changeOwner (address payable newOwner) public {
+        console.log('msg sender', msg.sender);
+        address oldOwnerRegistryAddr = ownerRegistryAddr;
+        // console.log("old ownerRegistryAddr", ownerRegistryAddr);
+        // console.log("old owner", owner);
+        ownerRegistryAddr = msg.sender;
+        owner = newOwner;
+        forSale = false;
+        // console.log("new ownerRegistryAddr", ownerRegistryAddr);
+        // console.log("new owner", owner);
     }
 
     function sell(uint256 price) public restricted returns (bool) {
@@ -86,6 +90,15 @@ contract Tree {
         return age;
     }
 
+    function useAllButSomeCO2(uint256 remainder) public restricted {
+        require (CO2 >= remainder, "CO2 used is more than the available amount");
+        CO2 = remainder;
+    }
+
+    function useAllCO2() public restricted {
+        CO2 = 0;
+    }
+    
     /// @notice Only manager can do
     modifier restricted() {
         require (msg.sender == ownerRegistryAddr, "Can only be executed by the owner of this tree");
