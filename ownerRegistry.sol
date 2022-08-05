@@ -10,14 +10,10 @@ contract ownerRegistry {
 
     address payable public owner;
 
-    /// Hardcode oracle address for database
-    /// Hardcode orcale address for Verra
 
-    // Tree[] private _trees;
-    // mapping (uint256 => Tree) private trees;
-    // address private treesAddr;
+
+
     mapping (uint256 => address) private treesAddr;
-    // mapping (uint256 => CarbonCredit) private _carbonCredits;
     mapping (uint256 => address) private _carbonCreditsAddr;
     mapping (uint256 => address) private forSaleList;
     mapping (uint256 => address) private forSaleListCC;
@@ -34,7 +30,6 @@ contract ownerRegistry {
 
     struct user_inventory {
         address tree_owner;
-        //address[] tree_address;
         address tree_address;
     }  
 
@@ -68,14 +63,12 @@ contract ownerRegistry {
         /// emit event to be picked up by verifier oracle
         emit newTreeAdded(address(this), address(newTree), location);
 
-        // trees[numTrees] = newTree;
         treesAddr[numTrees] = address(newTree);
         numTrees++;
 
         //console.log("inventory struct is: ", tree_adder);
 
         return numTrees;
-        //return tree_adder;
     }
 
     function addTreeForSale(address tree) public {
@@ -154,21 +147,6 @@ contract ownerRegistry {
     }
 
 
-
-
-    ///////////////////////////// [ Buy, Sell and Use functions ] ////////////////////////////////////////////////////////
-    // @notice Try and buy a tree from someone else
-    // @dev ###
-    // @param treeAddress address of the tree that the owner is attempting to buy
-    // @return bool true if successful, false otherwise
-
-    // function getTreeList(address) internal restricted returns (mapping(uint256 => Tree) storage) {
-    //     for (uint i = 0; i < numTrees; i++) {
-    //         console.log ('Tree Addr', address(trees[i]));
-    //     }
-    //     return trees;
-    // }
-
     function getTreeList() public returns (address[] memory) {
         address[] memory ret = new address[](numTrees);
         for (uint i = 0; i < numTrees; i++) {
@@ -215,7 +193,6 @@ contract ownerRegistry {
 
     function buyTree(uint256 treeIndex) public restricted payable returns (bool) {
 
-        // bool successful;
         address oldOwnerRegistryAddr;
         address payable oldOwner;
         uint256 salePrice;
@@ -230,11 +207,9 @@ contract ownerRegistry {
             require(success, "Transfer failed.");
             console.log('sender balance', address(this).balance);
             console.log('oo1 balance', oldOwner.balance);
-            // oldOwner.transfer(salePrice);
             Tree(temp).changeOwner(owner);
             treesAddr[numTrees] = temp;
             numTrees++;
-            // mapping (uint256 => Tree) storage oldTrees = getTreeList(oldOwner)
             ownerRegistry(payable(oldOwnerRegistryAddr)).findAndRemoveTree(temp);
             return true;
         }
@@ -248,7 +223,6 @@ contract ownerRegistry {
     // @return bool true if successful, false otherwise
     
     function buyCredit(uint256 creditIndex) public restricted payable returns (bool) {
-        // bool successful;
         address oldOwnerRegistryAddr;
         address payable oldOwner;
         uint256 salePrice;
@@ -263,7 +237,6 @@ contract ownerRegistry {
             require(success, "Transfer failed.");
             console.log('sender balance', address(this).balance);
             console.log('oo1 balance', oldOwner.balance);
-            // oldOwner.transfer(salePrice);
             CarbonCredit(temp).changeOwner(owner);
             _carbonCreditsAddr[numCarbonCredits] = temp;
             numCarbonCredits++;
@@ -281,7 +254,6 @@ contract ownerRegistry {
     // @param price the price the owner wants to sell the tree for
     // @return bool true if successful, false otherwise
     function sellTree(uint treeIndex, uint price) public restricted returns (bool) {
-        // return trees[treeIndex].sell(price);
         emit treeSold(treesAddr[treeIndex]);
         return Tree(treesAddr[treeIndex]).sell(price);
     }
