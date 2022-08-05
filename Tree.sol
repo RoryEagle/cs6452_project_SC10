@@ -23,7 +23,6 @@ contract Tree {
         creator = creatorAddr;
         location = tree_location;
         treeType = tree_type;
-        // Adding in test value amount of CO2, will be calculated with time later
         CO2 = 250;
         plantDate = block.timestamp;
         console.log("tree loc output is: ", location);
@@ -34,7 +33,6 @@ contract Tree {
     }
 
     function getTreeLocation() public returns (string memory) {
-        // console.log("tree loc output", location);
         return location;
     }
 
@@ -58,13 +56,11 @@ contract Tree {
     function changeOwner (address payable newOwner) public {
         console.log('msg sender', msg.sender);
         address oldOwnerRegistryAddr = ownerRegistryAddr;
-        // console.log("old ownerRegistryAddr", ownerRegistryAddr);
-        // console.log("old owner", owner);
+
         ownerRegistryAddr = msg.sender;
         owner = newOwner;
         forSale = false;
-        // console.log("new ownerRegistryAddr", ownerRegistryAddr);
-        // console.log("new owner", owner);
+
     }
 
     function sell(uint256 price) public restricted returns (bool) {
