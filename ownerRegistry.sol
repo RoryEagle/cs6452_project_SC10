@@ -21,6 +21,7 @@ contract ownerRegistry {
     uint numTrees = 0;
     uint numTreesForSale = 0;
     uint numCarbonCredits = 0;
+    uint numCreditsForSale = 0;
 
     constructor() payable{
         owner = payable(msg.sender);
@@ -40,6 +41,7 @@ contract ownerRegistry {
     event creditBought(address credit);
     event creditSold(address credit);
     event loadForSaleList();
+    event loadForSaleListCC();
 
 
     // Function to receive Ether. msg.data must be empty
@@ -191,6 +193,10 @@ contract ownerRegistry {
         emit loadForSaleList();
     }
 
+    function loadCarbonCreditsForSale() public {
+        emit loadForSaleListCC();
+    }
+
     function buyTree(uint256 treeIndex) public restricted payable returns (bool) {
 
         address oldOwnerRegistryAddr;
@@ -276,6 +282,11 @@ contract ownerRegistry {
     
     function useCredit(uint creditIndex) public restricted returns (bool) {
         return CarbonCredit(_carbonCreditsAddr[creditIndex]).use();
+    }
+
+    function addCreditForSale(address credit) public {
+        forSaleListCC[numCreditsForSale] = credit;
+        numCreditsForSale++;
     }
 
 

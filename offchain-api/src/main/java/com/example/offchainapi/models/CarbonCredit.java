@@ -17,6 +17,7 @@ public class CarbonCredit {
     @Id
     String owner;
     String address;
+    boolean forSale;
 
     public CarbonCredit() {
 
