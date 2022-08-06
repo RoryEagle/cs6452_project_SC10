@@ -55,7 +55,6 @@ contract ownerRegistry {
     /// @param treeType Name of the venuethe type of the tree e.g. "Pine", "Mangrove", "Oak"
     /// @param location Coordinates of the tree, e.g. "-33.894425276653635, 151.264161284958"
     /// @return Number of trees in the registry at the moment
-    
     function addTree(string memory treeType, string memory location) public restricted returns (uint256) {
         /// Confirm with external computation component that there is no tree already at this location
 
@@ -73,33 +72,36 @@ contract ownerRegistry {
         return numTrees;
     }
 
+    /// @notice Adds a new tree for sale
+    /// @param tree the address of the tree 
     function addTreeForSale(address tree) public {
         forSaleList[numTreesForSale] = tree;
         numTreesForSale++;
     }
 
+    /// @notice gets the location of a tree
+    /// @param index the index of the tree in this registry to be accessed
     function getTreeLoc(uint256 index) public restricted returns (string memory) {
         return Tree(treesAddr[index]).getTreeLocation();
     }
 
+    /// @notice gets the owner of this ownerRegistry
+    /// @return the owner
     function getOwner() public returns (address) {
         return owner;
     }
 
+    /// @notice returns the ETH balance assosciated with this registry
+    /// @return the balance
     function getBalance() public view returns (uint256) {
         console.log('this balance', address(this).balance);
         return owner.balance;
     }
 
-    // changed @param
 
-    /// @notice Add a new lunch venue
-    /// @dev Needs to reference external DB to check for duplicate trees
-    // @param treeType Name of the venuethe type of the tree e.g. "Pine", "Mangrove", "Oak"
-    // @param location Coordinates of the tree, e.g. "-33.894425276653635, 151.264161284958"
-    // @return Number of trees in the registry at the moment
-
-    /// NOTE: Removed restricted requirement for testing, add back in before deployment
+    /// @notice Generates a new credit from a set of trees
+    /// @param treeIndexes The list of indexes of trees to use for the carbonCredit
+    /// @return The number of carbonCredits in this ownerRegistry
     function generateCredit(uint[] memory treeIndexes) public restricted returns (uint256) {
         /// from each tree, grab amount of CO2
         uint256 totalCO2 = 0;
@@ -148,7 +150,8 @@ contract ownerRegistry {
         return numCarbonCredits;
     }
 
-
+    /// @notice gets the list of trees in the registry
+    /// @return The list of trees
     function getTreeList() public returns (address[] memory) {
         address[] memory ret = new address[](numTrees);
         for (uint i = 0; i < numTrees; i++) {
@@ -158,6 +161,8 @@ contract ownerRegistry {
         return ret;
     }
 
+    /// @notice gets the list of credits in the registry
+    /// @return The list of credits
     function getCreditsList() public returns (address[] memory) {
         address[] memory ret = new address[](numCarbonCredits);
         for (uint i = 0; i < numCarbonCredits; i++) {
@@ -167,6 +172,8 @@ contract ownerRegistry {
         return ret;
     }
 
+    /// @notice Removes a tree from the list of trees
+    /// @param treeAddr The address of the tree to be removed
     function findAndRemoveTree(address treeAddr) external {
         uint index = 0;
         for (uint i = 0; i < numTrees; i++) {
@@ -178,6 +185,8 @@ contract ownerRegistry {
         numTrees--;
     }
 
+    /// @notice Removes a credit from the list of credits
+    /// @param ccAddr The address of the address to be removed
     function findAndRemoveCC(address ccAddr) external {
         uint index = 0;
         for (uint i = 0; i < numCarbonCredits; i++) {
@@ -189,14 +198,20 @@ contract ownerRegistry {
         numCarbonCredits--;
     }
 
+    /// @notice emits an event to load trees for sale 
     function loadTreesForSale() public {
         emit loadForSaleList();
     }
 
+    /// @notice emits an event to load carbon credits for sale 
     function loadCarbonCreditsForSale() public {
         emit loadForSaleListCC();
     }
 
+
+    /// @notice Try and buy a tree from someone else
+    /// @param treeInde the index of the tree that the owner is attempting to buy
+    /// @return bool true if successful, false otherwise
     function buyTree(uint256 treeIndex) public restricted payable returns (bool) {
 
         address oldOwnerRegistryAddr;
@@ -223,11 +238,9 @@ contract ownerRegistry {
     }
 
 
-    // @notice Try and buy a Credit from someone else
-    // @dev ###
-    // @param creditAddress address of the credit that the owner is attempting to buy
-    // @return bool true if successful, false otherwise
-    
+    /// @notice Try and buy a Credit from someone else
+    /// @param creditIndex the index of the credit that the owner is attempting to buy
+    /// @return bool true if successful, false otherwise
     function buyCredit(uint256 creditIndex) public restricted payable returns (bool) {
         address oldOwnerRegistryAddr;
         address payable oldOwner;
@@ -254,11 +267,10 @@ contract ownerRegistry {
     }
 
 
-    // @notice Mark a tree for sale at a given price
-    // @dev ###
-    // @param treeIndex the index that indicates the position of the selected tree in treesAddr
-    // @param price the price the owner wants to sell the tree for
-    // @return bool true if successful, false otherwise
+    /// @notice Mark a tree for sale at a given price
+    /// @param treeIndex the index that indicates the position of the selected tree in treesAddr
+    /// @param price the price the owner wants to sell the tree for
+    /// @return bool true if successful, false otherwise
     function sellTree(uint treeIndex, uint price) public restricted returns (bool) {
         emit treeSold(treesAddr[treeIndex]);
         return Tree(treesAddr[treeIndex]).sell(price);
@@ -266,7 +278,6 @@ contract ownerRegistry {
 
 
     /// @notice Mark a credit for sale at a given price
-    /// @dev ###
     /// @param creditIndex address of the credit the owner wants to sell
     /// @param price the price the owner wants to sell the tree for
     /// @return bool true if successful, false otherwise
@@ -276,26 +287,27 @@ contract ownerRegistry {
 
 
     /// @notice Mark a carbonCredit as used
-    /// @dev ###
-    // @param creditAddress address of the credit the owner wants to use
-    // @return bool true if successful, false otherwise
-    
+    /// @param creditIndex index of the credit the owner wants to use
+    /// @return bool true if successful, false otherwise
     function useCredit(uint creditIndex) public restricted returns (bool) {
         return CarbonCredit(_carbonCreditsAddr[creditIndex]).use();
     }
 
+    /// @notice Marks a carbon credit for sale
+    /// @param credit the address of the credit to be marked
     function addCreditForSale(address credit) public {
         forSaleListCC[numCreditsForSale] = credit;
         numCreditsForSale++;
     }
 
-
+    /// @notice Verifies a tree
+    /// @param idx The index of the tree to be verified
     function verifyTree(uint idx) public {
         require(idx < numTrees, "No tree is at the index requested");
         Tree(treesAddr[idx]).verifyTree();
     }
 
-    /// @notice Only manager can do
+    /// @notice Only owner can do
     modifier restricted() {
         console.log('Message sender', msg.sender);
         console.log('ownerRegister addr', address(this));
