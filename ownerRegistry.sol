@@ -21,6 +21,7 @@ contract ownerRegistry {
     uint numTrees = 0;
     uint numTreesForSale = 0;
     uint numCarbonCredits = 0;
+    uint numCreditsForSale = 0;
 
     constructor() payable{
         owner = payable(msg.sender);
@@ -281,6 +282,11 @@ contract ownerRegistry {
     
     function useCredit(uint creditIndex) public restricted returns (bool) {
         return CarbonCredit(_carbonCreditsAddr[creditIndex]).use();
+    }
+
+    function addCreditForSale(address credit) public {
+        forSaleListCC[numCreditsForSale] = credit;
+        numCreditsForSale++;
     }
 
 
