@@ -77,17 +77,45 @@ public class ApiController {
         }
     }
 
+    @PostMapping("/sellCredit")
+    public ResponseEntity<String> sellCredit(@RequestBody JSONObject credit) {
+        try {
+            System.out.println("received sell request");
+            service.sellCredit(credit.getAsString("address"));
+            System.out.println("credit sold");
+            return ResponseEntity.ok("success");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("given credit address does not exist");
+        }
+    }
+
+    @PostMapping("/buyCredit")
+    public ResponseEntity<String> buyCredit(@RequestBody JSONObject credit) {
+        try {
+            System.out.println("received credit bought request");
+            service.buyCredit(credit.getAsString("address"));
+            System.out.println("credit bought");
+            return ResponseEntity.ok("success");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("given credit address does not exist");
+        }
+    }
+
     @GetMapping("/loadTreesForSale")
     public ResponseEntity<List<String>> forSaleList() {
         try {
             System.out.println("getting for sale tree list");
             return ResponseEntity.ok(service.getForSaleList());
-//            List<String> list=new ArrayList<String>(){{
-//                add("1");
-//                add("2");
-//                add("3");
-//            }};
-//            return ResponseEntity.ok(list);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
+    @GetMapping("/loadCreditsForSale")
+    public ResponseEntity<List<String>> forSaleListCC() {
+        try {
+            System.out.println("getting for sale credit list");
+            return ResponseEntity.ok(service.getForSaleListCC());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }

@@ -40,6 +40,7 @@ contract ownerRegistry {
     event creditBought(address credit);
     event creditSold(address credit);
     event loadForSaleList();
+    event loadForSaleListCC();
 
 
     // Function to receive Ether. msg.data must be empty
@@ -189,6 +190,10 @@ contract ownerRegistry {
 
     function loadTreesForSale() public {
         emit loadForSaleList();
+    }
+
+    function loadCarbonCreditsForSale() public {
+        emit loadForSaleListCC();
     }
 
     function buyTree(uint256 treeIndex) public restricted payable returns (bool) {

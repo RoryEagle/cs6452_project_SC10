@@ -203,6 +203,38 @@ function compileSols(solNames: string[]): any {
         console.log(receipt);
         console.log("error listening on event temperatureRequest");
     });
+
+    // event creditBought(address tree);
+    contract_instance!.events["creditBought(address)"]()
+    .on("connected", function (subscriptionId: any) {
+        console.log("listening on event creditBought");
+    })
+        .on("data", async function (event: any) {
+        let address = event.returnValues.credit;
+
+        let temperature = await axios.post(`http://localhost:8080/buyCredit`, {address: address},
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+          },
+        },)
+            .then(async function (response: any) {
+                console.log("bought credit");
+                console.log
+                if (response?.res?.statusCode == 200) {
+                    console.log("success");
+                }
+            })
+            .catch(function (error: any) {
+            console.log(error);
+            });
+    })
+    .on("error", function (error: any, receipt: any) {
+        console.log(error);
+        console.log(receipt);
+        console.log("error listening on event temperatureRequest");
+    });
     // event treeSold(address tree);
     contract_instance!.events["treeSold(address)"]()
     .on("connected", function (subscriptionId: any) {
@@ -234,6 +266,39 @@ function compileSols(solNames: string[]): any {
         console.log(receipt);
         console.log("error listening on event temperatureRequest");
     });
+
+    // event creditSold(address credit);
+    contract_instance!.events["creditSold(address)"]()
+    .on("connected", function (subscriptionId: any) {
+        console.log("listening on event creditSold");
+    })
+        .on("data", async function (event: any) {
+        let address = event.returnValues.credit;
+
+        let temperature = await axios.post(`http://localhost:8080/sellCredit`, {address: address},
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+          },
+        },)
+            .then(async function (response: any) {
+                console.log("sell credit");
+                console.log
+                if (response?.res?.statusCode == 200) {
+                    console.log("success");
+                }
+            })
+            .catch(function (error: any) {
+            console.log(error);
+            });
+    })
+    .on("error", function (error: any, receipt: any) {
+        console.log(error);
+        console.log(receipt);
+        console.log("error listening on event temperatureRequest");
+    });
+
 
     // event loadForSaleList();
     contract_instance!.events["loadForSaleList()"]()
@@ -282,4 +347,53 @@ function compileSols(solNames: string[]): any {
         .on("data", async function (event: any) {
             console.log("is tree verified: " + event.returnValues.isVerified);
         })
+
+   // event loadForSaleListCC();
+    contract_instance!.events["loadForSaleListCC()"]()
+    .on("connected", function (subscriptionId: any) {
+        console.log("listening on event loadForSaleListCC");
+    })
+        .on("data", async function (event: any) {
+
+            let forSaleListCC = await axios.get(`http://localhost:8080/loadCreditsForSale`)
+            .then(async function (response: any) {
+                console.log("getforsaleListCC");
+            return response?.data;
+            })
+            .catch(function (error: any) {
+            console.log(error);
+            });
+            console.log(forSaleListCC);
+// assume account balance is sufficient
+    for (const credit of forSaleListCC)
+        try {
+            contract_instance.methods["addCreditForSale(address)"](credit).send({
+                from: account.address,
+                gasPrice: gasPrice!,
+                gas: Math.ceil(1.2 * await contract_instance.methods["addCreditForSale(address)"]
+                (credit).estimateGas({ from: account.address })),
+            }).then(function (receipt: any) {
+            
+                return receipt;
+            }).catch((err: any) => {
+                console.error(err);
+            });
+        } catch (e) {
+        console.log(e);
+        }
+    })
+    .on("error", function (error: any, receipt: any) {
+        console.log(error);
+        console.log(receipt);
+        console.log("error listening on event temperatureRequest");
+    });
+    //log is verified
+    contract_instance!.events["log(bool)"]()
+    .on("connected", function (subscriptionId: any) {
+        console.log("listening on event log");
+    })
+        .on("data", async function (event: any) {
+            console.log("is tree verified: " + event.returnValues.isVerified);
+        })
 })();
+

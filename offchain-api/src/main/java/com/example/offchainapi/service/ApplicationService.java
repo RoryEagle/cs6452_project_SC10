@@ -38,6 +38,12 @@ public class ApplicationService {
         tree.setForSale(true);
         treeRepo.save(tree);
     }
+    public void sellCredit(String creditAddress) {
+        CarbonCredit credit = carbonCreditRepo.getReferenceById(creditAddress);
+        credit.setForSale(true);
+        carbonCreditRepo.save(credit);
+    }
+
 
     public void buyTree(String treeAddress) {
         Tree tree = treeRepo.getReferenceById(treeAddress);
@@ -45,8 +51,18 @@ public class ApplicationService {
         treeRepo.save(tree);
     }
 
+    public void buyCredit(String creditAddress) {
+        CarbonCredit credit = carbonCreditRepo.getReferenceById(creditAddress);
+        credit.setForSale(false);
+        carbonCreditRepo.save(credit);
+    }
+
     public List<String> getForSaleList() {
         return treeRepo.findAll().stream().filter(Tree::isForSale).map(Tree::getAddress).collect(Collectors.toList());
+    }
+
+    public List<String> getForSaleListCC() {
+        return carbonCreditRepo.findAll().stream().filter(CarbonCredit::isForSale).map(CarbonCredit::getAddress).collect(Collectors.toList());
     }
 
     public void addCarbonCredit(CarbonCredit carbonCredit) {
