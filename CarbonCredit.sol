@@ -35,8 +35,9 @@ contract CarbonCredit {
     /// @notice change owner of this Carbon Credit and reset forSale
     /// @dev should only be called if buy() returns the correct address
     /// @param newOwner address of the new owner of this Carbon Credit
-    function changeOwner (address payable newOwner, address test) public notExpire {
-        require(msg.sender == test, "Can only be executed by the buyer");
+    /// @param newOwnerORAddr New Owner ownerRegistry address
+    function changeOwner (address payable newOwner, address newOwnerORAddr) public notExpire {
+        require(msg.sender == newOwnerORAddr, "Can only be executed by the buyer");
         ownerRegistryAddr = msg.sender;
         owner = newOwner;
         forSale = false;
