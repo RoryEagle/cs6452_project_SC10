@@ -210,7 +210,7 @@ contract ownerRegistry {
 
 
     /// @notice Try and buy a tree from someone else
-    /// @param treeInde the index of the tree that the owner is attempting to buy
+    /// @param treeIndex the index of the tree that the owner is attempting to buy
     /// @return bool true if successful, false otherwise
     function buyTree(uint256 treeIndex) public restricted payable returns (bool) {
 
