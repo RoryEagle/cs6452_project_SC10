@@ -152,7 +152,7 @@ contract ownerRegistry {
 
     /// @notice gets the list of trees in the registry
     /// @return The list of trees
-    function getTreeList() public returns (address[] memory) {
+    function getTreeList() public restricted returns (address[] memory) {
         address[] memory ret = new address[](numTrees);
         for (uint i = 0; i < numTrees; i++) {
             ret[i] = treesAddr[i];
@@ -163,7 +163,7 @@ contract ownerRegistry {
 
     /// @notice gets the list of credits in the registry
     /// @return The list of credits
-    function getCreditsList() public returns (address[] memory) {
+    function getCreditsList() public restricted returns (address[] memory) {
         address[] memory ret = new address[](numCarbonCredits);
         for (uint i = 0; i < numCarbonCredits; i++) {
             ret[i] = _carbonCreditsAddr[i];
