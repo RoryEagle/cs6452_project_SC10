@@ -17,3 +17,17 @@ To execute the oracle for listening in on events
 1. change the "account" variable to a valid ganashe private key value
 2. run the following command from the root directory
     npx tsc && node oracle-smart-contract/build/index.js
+    
+Smart Contracts:
+1. ownerRegistry.sol
+2. Tree.sol
+3. CarbonCredit.sol
+
+To deploy smart contracts on remix:
+1. Compile ownerRegistry.sol
+2. Deploy ownerRegistry.sol (with value if transaction is needed)
+
+Use contracts after deployment:
+1. ownRegistry.sol
+- addTree(string treeType, string location): Calls the constructor of Tree contractor to create    new tree, feed the constructor with two information (i.e. treeType and location) for tree     verification.
+    - sellTree(treeIndex,price): Calls the sell function in tree which sets forSale to true and set                                 
