@@ -24,7 +24,7 @@ contract CarbonCredit {
     /// @notice Check if this Carbon Credit is for Sale and identity of buyer
     /// @dev oldOwnerRegistryAddr saved and pass back to ownerRegistry for transaction, ownerRegistry should check if oldOwnerRegistry is updated before transaction and changeOwner.
     /// @return oldOwnerRegistryAddr, owner and salePrice for transaction if check is true, msg.sender instead of oldOwnerRegistryAddr if check is false. 
-    function buy() public returns (address, address payable, uint256) notExpire {
+    function buy() public notExpire returns (address, address payable, uint256) {
         address oldOwnerRegistryAddr = ownerRegistryAddr;
         if (forSale == true && ownerRegistryAddr != msg.sender) {
             return (oldOwnerRegistryAddr, owner, salePrice);
@@ -45,7 +45,7 @@ contract CarbonCredit {
     
     /// @ notice change forSale to true and setup the salePrice
     /// @ param price salePrice of this Carbon Credit
-    function sell (uint256 price) public restricted returns (bool) {
+    function sell (uint256 price) public restricted notExpire returns (bool) {
         forSale = true;
         salePrice = price;
         return forSale;
