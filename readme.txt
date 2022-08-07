@@ -26,8 +26,40 @@ Smart Contracts:
 To deploy smart contracts on remix:
 1. Compile ownerRegistry.sol
 2. Deploy ownerRegistry.sol (with value if transaction is needed)
+3. Deploy Tree.sol and Carbon Credit.sol at address to check their status.
 
 Use contracts after deployment:
 1. ownRegistry.sol
-- addTree(string treeType, string location): Calls the constructor of Tree contractor to create    new tree, feed the constructor with two information (i.e. treeType and location) for tree     verification.
-    - sellTree(treeIndex,price): Calls the sell function in tree which sets forSale to true and set                                 
+- addTree(treeType, location): Adds tree with treeType and location.
+- generateCredit(treeIndexes): Generate credit with list of verified tree.
+- getTreeList(): Get list of owned trees.
+- getCreditsList(): Get list of owned Carbon Credits.
+- sellTree(treeIndex, price): Set the salePrice of the tree with treeIndex in treeAddr list. Add the tree to the tree's forSale list.
+- sellCredit(creditIndex, price): Similar to sellTree.
+- loadTreesForSale(): Load the current for Sale list for trees.
+- loadCarbonCreditsForSale(): Similar to loadTreesForSale().
+- buyTree(treeIndex): Buy tree with treeIndex in tree's forSale list.
+- buyCredit(creditIndex): Similar to buyTree.
+- useCredit(creditIndex): Use the Carbon Credit with creditIndex in _carbonCreditsAddr list, Carbon Credit expired after use. 
+
+2. Tree.sol
+Check the following status of the tree:
+- CO2
+- CO2 Used
+- Creator
+- ForSale
+- Location
+- Owner
+- Plant Date (Block no.)
+- Sale Price
+- Tree type 
+- Verified
+
+3. CarbonCredit.sol
+Check the following status of the Carbon Credit:
+- Creator
+- Expired
+- ForSale
+- Owner
+- SalePrice
+
