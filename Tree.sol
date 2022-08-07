@@ -83,7 +83,7 @@ contract Tree {
     }
 
     ///@notice Reduce CO2 value by the amount used. Available CO2 must be more than or equaled to amount used
-    ///@param CO2 amountUsud
+    ///@param amountUsed CO2 amountUsed
     function useCO2(uint256 amountUsed) public restricted {
         require (CO2 >= amountUsed, "CO2 used is more than the available amount");
         CO2 = CO2 - amountUsed;
