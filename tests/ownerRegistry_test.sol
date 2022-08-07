@@ -10,9 +10,13 @@ import "../ownerRegistry.sol";
 
 contract ownerRegistryTest is ownerRegistry {
         address acc0 ;
+        uint[] idxs;
 
     function beforeAll() public {
         acc0 = TestsAccounts.getAccount(0);
+        idxs = new uint[](2);
+        idxs[0] = 0;
+        idxs[1] = 1; 
     }
 
     function checkOwner() public {
@@ -26,7 +30,7 @@ contract ownerRegistryTest is ownerRegistry {
     }
 
     function testValidateTree() public {
-        
+
         Assert.equal(addTree('tree1', 'park1'), 3, 'Failed');
         Assert.equal(addTree('tree2', 'park2'), 4, 'Failed');
 
@@ -37,7 +41,7 @@ contract ownerRegistryTest is ownerRegistry {
         verifyTree(3);
 
     }
-    
+
     function testCombineTree() public {
 
         uint[] memory idxs = new uint[](4);
@@ -45,33 +49,13 @@ contract ownerRegistryTest is ownerRegistry {
         idxs[1] = 1;
         idxs[2] = 2;
         idxs[3] = 3;
-                
-        Assert.equal(generateCredit(idxs), 1, 'Failed when generating credit');        
+
+        Assert.equal(generateCredit(idxs), 1, 'Failed when generating credit');
     }
 
     function addMoreTrees() public {
         Assert.equal(addTree('tree1', 'park1'), 5, 'Failed When adding Tree');
         Assert.equal(addTree('tree2', 'park2'), 6, 'Failed');
-    }      
-
-
-
-    /// #sender: account-0
-    function testCombineInsufficientTrees() public {
-        uint[] memory idxs;
-        idxs  = new uint[](2);
-        idxs[0] = 0;
-        idxs[1] = 1;  
-
-        try this.generateCredit(idxs) returns (uint) {
-            Assert.ok(false, "Should not be able to generate this credit");
-        } catch Error(string memory reason) {
-            Assert.equal(reason, "Not enough CO2 in the given trees", "Failed with unexpected reason");
-        } catch (bytes memory /* lowLevelData */) {
-            Assert.ok(false, "Failed for an unexpectd reason");
-        }
-
     }
-
 }
 
