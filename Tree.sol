@@ -61,7 +61,7 @@ contract Tree {
     ///@param newOwner New owner address
     ///@param newOwnerORAddr New Owner ownerRegistry address
     function changeOwner (address payable newOwner, address newOwnerORAddr) public {
-        require(msg.sender == test, "Can only be executed by the buyer");
+        require(msg.sender == newOwnerORAddr, "Can only be executed by the buyer");
         ownerRegistryAddr = msg.sender;
         owner = newOwner;
         forSale = false;
