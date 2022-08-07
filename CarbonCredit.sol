@@ -32,9 +32,9 @@ contract CarbonCredit {
         return (msg.sender, owner, salePrice);
     }
     
-    /// @ notice change owner of this Carbon Credit and reset forSale
-    /// @ dev should only be called if buy() returns the correct address
-    /// @ param newOwner address of the new owner of this Carbon Credit
+    /// @notice change owner of this Carbon Credit and reset forSale
+    /// @dev should only be called if buy() returns the correct address
+    /// @param newOwner address of the new owner of this Carbon Credit
     function changeOwner (address payable newOwner) public notExpire {
         console.log('sender', msg.sender);
         address oldOwnerRegistryAddr = ownerRegistryAddr;
@@ -43,15 +43,15 @@ contract CarbonCredit {
         forSale = false;
     }
     
-    /// @ notice change forSale to true and setup the salePrice
-    /// @ param price salePrice of this Carbon Credit
+    /// @notice change forSale to true and setup the salePrice
+    /// @param price salePrice of this Carbon Credit
     function sell (uint256 price) public restricted notExpire returns (bool) {
         forSale = true;
         salePrice = price;
         return forSale;
     }
     
-    /// @ notice use the Carbon Credit(i.e set expired to true)
+    /// @notice use the Carbon Credit(i.e set expired to true)
     function use() public restricted returns (bool) {
         if (expired) {
             return false;
