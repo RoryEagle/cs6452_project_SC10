@@ -43,17 +43,17 @@ Use contracts after deployment:
 - useCredit(creditIndex): Use the Carbon Credit with creditIndex in _carbonCreditsAddr list, Carbon Credit expired after use. 
 
 2. Tree.sol
-Check the following status of the tree:
-- CO2
-- CO2 Used
-- Creator
-- ForSale
-- Location
-- Owner
-- Plant Date (Block no.)
-- Sale Price
-- Tree type 
-- Verified
+- getTreeLocation(): Returns the location value of the constructor.
+- isVerified(): Returns the verified value of the contract.
+- getCO2(): Returns the CO2 value of the constructor.
+- buy(): If conditions are met, returns the required addresses and sale price of the tree to be bought.
+- changeOwner(newOwner): Changes the constructor's owner value to the address of the new owner.
+- sell(price): Set the forSale value in the constructor to true.
+- verifyTree(): Set the verified value in the contract to true.
+- useCO2(amountUsed): Reduce the CO2 value by the amount used.
+- getAge(): Return the age of the tree in seconds.
+- useAllButSomeCO2(remainder): Set the CO2 value to the remainder.
+- useAllCO2(): Set the CO2 value to 0.
 
 3. CarbonCredit.sol
 Check the following status of the Carbon Credit:
