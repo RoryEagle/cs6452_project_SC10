@@ -228,7 +228,7 @@ contract ownerRegistry {
             require(success, "Transfer failed.");
             console.log('sender balance', address(this).balance);
             console.log('oo1 balance', oldOwner.balance);
-            Tree(temp).changeOwner(owner);
+            Tree(temp).changeOwner(owner, address(this));
             treesAddr[numTrees] = temp;
             numTrees++;
             ownerRegistry(payable(oldOwnerRegistryAddr)).findAndRemoveTree(temp);
@@ -256,7 +256,7 @@ contract ownerRegistry {
             require(success, "Transfer failed.");
             console.log('sender balance', address(this).balance);
             console.log('oo1 balance', oldOwner.balance);
-            CarbonCredit(temp).changeOwner(owner);
+            CarbonCredit(temp).changeOwner(owner, address(this));
             _carbonCreditsAddr[numCarbonCredits] = temp;
             numCarbonCredits++;
             ownerRegistry(payable(oldOwnerRegistryAddr)).findAndRemoveCC(temp);
